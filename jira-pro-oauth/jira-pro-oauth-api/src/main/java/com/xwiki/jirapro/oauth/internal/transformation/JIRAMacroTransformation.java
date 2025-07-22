@@ -21,6 +21,7 @@ package com.xwiki.jirapro.oauth.internal.transformation;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -50,11 +51,16 @@ import com.xwiki.jirapro.oauth.internal.JIRAOAuthAuthenticator;
 /**
  * Macro transformation to add a message in case of the user is not logged in JIRA.
  *
+ * @param <P> the type of the macro parameter.
  * @version $Id$
  * @since 1.0.0
  */
 public class JIRAMacroTransformation<P> implements org.xwiki.contrib.jira.macro.JIRAMacroTransformation<P>
 {
+    private static final String BLOCK_PARAM_CLASS = "class";
+
+    private static final String BLOCK_PARAM_CLASS_VALUE_WARNINGMESSAGE = "box warningmessage";
+
     @Inject
     private Logger logger;
 
@@ -106,8 +112,9 @@ public class JIRAMacroTransformation<P> implements org.xwiki.contrib.jira.macro.
     {
         ResourceReference reference = new ResourceReference("XWiki.JIRAPro.OAuth.JiraAuthorize", ResourceType.DOCUMENT);
         reference.setParameter("queryString",
-            "configId=" + URLEncoder.encode(configId, "UTF-8") +
-                "&redirectUrl=" + URLEncoder.encode(contextProvider.get().getURL().toString(), "UTF-8"));
+            "configId=" + URLEncoder.encode(configId, StandardCharsets.UTF_8)
+                + "&redirectUrl=" + URLEncoder.encode(contextProvider.get().getURL().toString(),
+                StandardCharsets.UTF_8));
         LinkBlock link = new LinkBlock(
             localization.getTranslation(linkTranslationKey).render().getChildren(),
             reference,
@@ -118,9 +125,10 @@ public class JIRAMacroTransformation<P> implements org.xwiki.contrib.jira.macro.
             link,
             new WordBlock("."));
         if (isInline) {
-            return new FormatBlock(blocks, Format.NONE, Map.of("class", "box warningmessage"));
+            return new FormatBlock(blocks, Format.NONE, Map.of(BLOCK_PARAM_CLASS,
+                BLOCK_PARAM_CLASS_VALUE_WARNINGMESSAGE));
         } else {
-            return new GroupBlock(blocks, Map.of("class", "box warningmessage"));
+            return new GroupBlock(blocks, Map.of(BLOCK_PARAM_CLASS, BLOCK_PARAM_CLASS_VALUE_WARNINGMESSAGE));
         }
     }
 }

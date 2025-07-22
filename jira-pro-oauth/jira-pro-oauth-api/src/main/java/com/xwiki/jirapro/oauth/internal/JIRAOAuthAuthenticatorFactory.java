@@ -41,6 +41,12 @@ import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
+/**
+ * The JIRA Authenticator factory for OAuth.
+ *
+ * @version $Id$
+ * @since 1.0.0
+ */
 @Singleton
 @Component
 @Named(JIRAOAuthAuthenticator.HINT)
@@ -49,10 +55,6 @@ public class JIRAOAuthAuthenticatorFactory implements JIRAuthenticatorFactory
     private static final List<String> JIRA_PRO_OAUTH_SPACE = List.of("XWiki", "JIRAPro", "OAuth");
 
     private static final String CONFIG_ID_FIELD = "id";
-
-    @Inject
-    @Named("context")
-    private Provider<ComponentManager> componentManagerProvider;
 
     /**
      * The document for storing the basic auth configuration.
@@ -65,6 +67,10 @@ public class JIRAOAuthAuthenticatorFactory implements JIRAuthenticatorFactory
      */
     public static final LocalDocumentReference OAUTH_DATA_CLASS_REFERENCE =
         new LocalDocumentReference(JIRA_PRO_OAUTH_SPACE, "ConfigClass");
+
+    @Inject
+    @Named("context")
+    private Provider<ComponentManager> componentManagerProvider;
 
     @Inject
     private Provider<XWikiContext> contextProvider;
@@ -91,7 +97,7 @@ public class JIRAOAuthAuthenticatorFactory implements JIRAuthenticatorFactory
                 authenticator =
                     componentManagerProvider.get().getInstance(JIRAAuthenticator.class, JIRAOAuthAuthenticator.HINT);
             } catch (ComponentLookupException e) {
-                throw new JIRAAuthenticatorException("Can't get OAuthAuthenticator component",e);
+                throw new JIRAAuthenticatorException("Can't get OAuthAuthenticator component", e);
             }
             authenticator.configure(configName, requireAuthentication == 1);
             return authenticator;

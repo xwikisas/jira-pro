@@ -23,7 +23,15 @@ import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.jira.count.JIRACountMacroParameters;
+import org.xwiki.contrib.jira.count.internal.JIRACountMacro;
 
+/**
+ * The macro transformation for the {@link JIRACountMacro}.
+ * See {@link JIRAMacroTransformation}.
+ *
+ * @version $Id$
+ * @since 1.0.0
+ */
 @Singleton
 @Component
 public class JIRACountMacroTransformation extends JIRAMacroTransformation<JIRACountMacroParameters>

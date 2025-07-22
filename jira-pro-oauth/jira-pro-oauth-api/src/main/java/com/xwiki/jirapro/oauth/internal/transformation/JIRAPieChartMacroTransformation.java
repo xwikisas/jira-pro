@@ -24,6 +24,13 @@ import javax.inject.Singleton;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.jira.charts.piechart.JIRAPieChartMacroParameters;
 
+/**
+ * The macro transformation for the {@link org.xwiki.contrib.jira.charts.internal.piechart.JIRAPieChartMacro}.
+ * See {@link JIRAMacroTransformation}.
+ *
+ * @version $Id$
+ * @since 1.0.0
+ */
 @Component
 @Singleton
 public class JIRAPieChartMacroTransformation extends JIRAMacroTransformation<JIRAPieChartMacroParameters>

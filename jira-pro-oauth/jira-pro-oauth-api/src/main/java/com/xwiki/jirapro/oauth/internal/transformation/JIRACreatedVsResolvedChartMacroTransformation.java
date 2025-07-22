@@ -23,7 +23,15 @@ import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.jira.charts.createdvsresolved.JIRACreatedVsResolvedMacroParameters;
+import org.xwiki.contrib.jira.charts.internal.createdvsresolved.JIRACreatedVsResolvedMacro;
 
+/**
+ * The macro transformation for the {@link JIRACreatedVsResolvedMacro}.
+ * See {@link JIRAMacroTransformation}.
+ *
+ * @version $Id$
+ * @since 1.0.0
+ */
 @Singleton
 @Component
 public class JIRACreatedVsResolvedChartMacroTransformation

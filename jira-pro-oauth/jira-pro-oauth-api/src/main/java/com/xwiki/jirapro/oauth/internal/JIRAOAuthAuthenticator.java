@@ -32,7 +32,6 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.contrib.jira.config.JIRAAuthenticator;
-import org.xwiki.contrib.jira.config.JIRAServer;
 import org.xwiki.contrib.oidc.OAuth2ClientManager;
 import org.xwiki.contrib.oidc.OAuth2Token;
 import org.xwiki.contrib.oidc.OAuth2TokenStore;
@@ -77,6 +76,12 @@ public class JIRAOAuthAuthenticator implements JIRAAuthenticator
     @Inject
     private Logger logger;
 
+    /**
+     * Configure the authenticator with the parameter set into the configuration.
+     *
+     * @param configurationName see {@link #getConfigurationName()}
+     * @param isRequiringAuthentication See {@link #isRequiringAuthentication()}
+     */
     public void configure(String configurationName, boolean isRequiringAuthentication)
     {
         this.configurationName = configurationName;
@@ -109,6 +114,9 @@ public class JIRAOAuthAuthenticator implements JIRAAuthenticator
         return configurationName;
     }
 
+    /**
+     * @return provide the OAuth token related to the specific JIRA server for the specific user.
+     */
     public Optional<String> getOAuthToken()
     {
         try {
@@ -137,11 +145,19 @@ public class JIRAOAuthAuthenticator implements JIRAAuthenticator
         }
     }
 
+    /**
+     * @return the OIDC configuration name.
+     */
     public String getConfigurationName()
     {
         return configurationName;
     }
 
+    /**
+     * @return true if the all request must be sent with authentication and no result is
+     * expected if no authentication is provided. And false generally in case of public JIRA instance where the
+     * authentication might be not mandatory but just to increase the user experience.
+     */
     public boolean isRequiringAuthentication()
     {
         return isRequiringAuthentication;

@@ -19,12 +19,18 @@
  */
 package com.xwiki.jirapro.oauth.internal.transformation;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.jira.macro.JIRAMacroParameters;
 
+/**
+ * The macro transformation for the {@link org.xwiki.contrib.jira.macro.internal.JIRAMacro}.
+ * See {@link JIRAMacroTransformation}.
+ *
+ * @version $Id$
+ * @since 1.0.0
+ */
 @Singleton
 @Component
 public class JIRADefaultMacroTransformation extends JIRAMacroTransformation<JIRAMacroParameters>
