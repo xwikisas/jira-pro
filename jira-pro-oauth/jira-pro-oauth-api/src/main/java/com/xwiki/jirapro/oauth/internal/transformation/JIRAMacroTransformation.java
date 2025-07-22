@@ -27,16 +27,12 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Provider;
 
 import org.slf4j.Logger;
-import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.contrib.jira.config.JIRAServer;
 import org.xwiki.localization.ContextualLocalizationManager;
-import org.xwiki.model.reference.LocalDocumentReference;
 import org.xwiki.rendering.block.Block;
 import org.xwiki.rendering.block.FormatBlock;
 import org.xwiki.rendering.block.GroupBlock;
@@ -59,24 +55,14 @@ import com.xwiki.jirapro.oauth.internal.JIRAOAuthAuthenticator;
  */
 public class JIRAMacroTransformation<P> implements org.xwiki.contrib.jira.macro.JIRAMacroTransformation<P>
 {
-    private static final LocalDocumentReference LOGIN_REDIRECT_DOCUMENT =
-        new LocalDocumentReference(List.of("XWiki", "JIRAPro", "OAuth"), "JiraAuthorize");
-
     @Inject
     private Logger logger;
-
-    @Inject
-    private DocumentAccessBridge documentAccessBridge;
 
     @Inject
     private Provider<XWikiContext> contextProvider;
 
     @Inject
     private ContextualLocalizationManager localization;
-
-    @Inject
-    @Named("context")
-    private Provider<ComponentManager> componentManagerProvider;
 
     @Override
     public List<Block> transform(List<Block> blocks, P parameters,

@@ -33,6 +33,7 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.contrib.jira.config.JIRAAuthenticator;
 import org.xwiki.contrib.jira.config.JIRAuthenticatorFactory;
+import org.xwiki.contrib.jira.config.internal.JIRAAuthenticatorException;
 import org.xwiki.model.reference.LocalDocumentReference;
 
 import com.xpn.xwiki.XWikiContext;
@@ -69,27 +70,33 @@ public class JIRAOAuthAuthenticatorFactory implements JIRAuthenticatorFactory
     private Provider<XWikiContext> contextProvider;
 
     @Override
-    public JIRAAuthenticator get(String serverId)
+    public JIRAAuthenticator get(String serverId) throws JIRAAuthenticatorException
     {
         XWikiContext context = contextProvider.get();
+        XWikiDocument doc;
         try {
-            XWikiDocument doc = context.getWiki()
+            doc = context.getWiki()
                 .getDocument(OAUTH_CONFIG_REFERENCE, context);
-            Optional<BaseObject> authObj = doc.getXObjects(OAUTH_DATA_CLASS_REFERENCE)
-                .stream().filter(x -> StringUtils.equals(serverId, (x.getStringValue(CONFIG_ID_FIELD))))
-                .findFirst();
-            if (authObj.isPresent()) {
-                int requireAuthentication = authObj.get().getIntValue("requireAuthentication");
-                String configName = authObj.get().getStringValue("oidcConfigName");
-                JIRAOAuthAuthenticator authenticator =
+        } catch (XWikiException e) {
+            throw new JIRAAuthenticatorException("Can't get JIRA OAuth configuration document", e);
+        }
+        Optional<BaseObject> authObj = doc.getXObjects(OAUTH_DATA_CLASS_REFERENCE)
+            .stream().filter(x -> StringUtils.equals(serverId, (x.getStringValue(CONFIG_ID_FIELD))))
+            .findFirst();
+        if (authObj.isPresent()) {
+            int requireAuthentication = authObj.get().getIntValue("requireAuthentication");
+            String configName = authObj.get().getStringValue("oidcConfigName");
+            JIRAOAuthAuthenticator authenticator;
+            try {
+                authenticator =
                     componentManagerProvider.get().getInstance(JIRAAuthenticator.class, JIRAOAuthAuthenticator.HINT);
-                authenticator.configure(configName, requireAuthentication == 1);
-                return authenticator;
-            } else {
-                throw new RuntimeException("Can't find Basic auth config for server ID: " + serverId);
+            } catch (ComponentLookupException e) {
+                throw new JIRAAuthenticatorException("Can't get OAuthAuthenticator component",e);
             }
-        } catch (XWikiException | ComponentLookupException e) {
-            throw new RuntimeException("Can't get JIRA Basic auth configuration", e);
+            authenticator.configure(configName, requireAuthentication == 1);
+            return authenticator;
+        } else {
+            throw new JIRAAuthenticatorException("Can't find OAuth config for server ID: " + serverId);
         }
     }
 }

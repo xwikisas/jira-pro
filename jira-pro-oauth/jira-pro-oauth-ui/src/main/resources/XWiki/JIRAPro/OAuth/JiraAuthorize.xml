@@ -44,7 +44,7 @@ String redirectUrl = request.getParameter("redirectUrl")
 if (StringUtils.isNotEmpty(configId) &amp;&amp; StringUtils.isNotEmpty(redirectUrl)) {
     services.oauth2client.authorize(configId, redirectUrl)
 } else {
-    println "Invlid request"
+    println "Invalid request"
 }
 {{/groovy}}</content>
 </xwikidoc>

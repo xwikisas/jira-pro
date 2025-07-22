@@ -48,31 +48,9 @@
       <version>${platform.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.xwiki.licensing</groupId>
-      <artifactId>application-licensing-licensor-api</artifactId>
-      <version>${licensing.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.xwiki.licensing</groupId>
-          <artifactId>application-licensing-licensor-ui</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.xwiki.platform</groupId>
-          <artifactId>xwiki-platform-bridge</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.xwiki.platform</groupId>
-          <artifactId>xwiki-platform-extension-handler-xar</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.xwiki.commons</groupId>
-          <artifactId>xwiki-commons-component-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.xwiki.rendering</groupId>
-          <artifactId>xwiki-rendering-api</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-oldcore</artifactId>
+      <version>${platform.version}</version>
     </dependency>
 
     <!-- OIDC dependency -->
@@ -193,16 +171,16 @@
           <artifactId>xwiki-commons-component-api</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>org.xwiki.rendering</groupId>
-          <artifactId>xwiki-rendering-transformation-macro</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>org.xwiki.platform</groupId>
           <artifactId>xwiki-platform-extension-handler-xar</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.xwiki.rendering</groupId>
           <artifactId>xwiki-rendering-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.xwiki.rendering</groupId>
+          <artifactId>xwiki-rendering-transformation-macro</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
