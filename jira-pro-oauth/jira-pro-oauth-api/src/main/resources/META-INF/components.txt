@@ -1,0 +1,7 @@
+com.xwiki.jirapro.oauth.internal.JIRAOAuthAuthenticator
+com.xwiki.jirapro.oauth.internal.JIRAOAuthAuthenticatorFactory
+com.xwiki.jirapro.oauth.internal.transformation.JIRABidimensionalGridChartMacroTransformation
+com.xwiki.jirapro.oauth.internal.transformation.JIRACountMacroTransformation
+com.xwiki.jirapro.oauth.internal.transformation.JIRACreatedVsResolvedChartMacroTransformation
+com.xwiki.jirapro.oauth.internal.transformation.JIRADefaultMacroTransformation
+com.xwiki.jirapro.oauth.internal.transformation.JIRAPieChartMacroTransformation
