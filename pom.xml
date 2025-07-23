@@ -44,7 +44,7 @@
   </scm>
   <properties>
     <licensing.version>1.29</licensing.version>
-    <jira.version>10.2.2-SNAPSHOT</jira.version>
+    <jira.version>10.2.2-SNAPSHOT-58</jira.version>
     <oidc.version>2.18.2</oidc.version>
     <xwiki.extension.category>application</xwiki.extension.category>
   </properties>

@@ -32,7 +32,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.contrib.jira.config.JIRAAuthenticator;
-import org.xwiki.contrib.jira.config.JIRAuthenticatorFactory;
+import org.xwiki.contrib.jira.config.JIRAAuthenticatorFactory;
 import org.xwiki.contrib.jira.config.internal.JIRAAuthenticatorException;
 import org.xwiki.model.reference.LocalDocumentReference;
 
@@ -50,7 +50,7 @@ import com.xpn.xwiki.objects.BaseObject;
 @Singleton
 @Component
 @Named(JIRAOAuthAuthenticator.HINT)
-public class JIRAOAuthAuthenticatorFactory implements JIRAuthenticatorFactory
+public class JIRAOAuthAuthenticatorFactory implements JIRAAuthenticatorFactory
 {
     private static final List<String> JIRA_PRO_OAUTH_SPACE = List.of("XWiki", "JIRAPro", "OAuth");
 
