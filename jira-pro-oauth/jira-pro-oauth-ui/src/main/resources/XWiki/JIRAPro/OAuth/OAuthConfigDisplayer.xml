@@ -1,0 +1,180 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.5" reference="XWiki.JIRAPro.OAuth.OAuthConfigDisplayer" locale="">
+  <web>XWiki.JIRAPro.OAuth</web>
+  <name>OAuthConfigDisplayer</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{velocity}}
+#set ($jiraOAuthClass = 'XWiki.JIRAPro.OAuth.ConfigClass')
+#set ($oidcConfClass = 'XWiki.OIDC.ClientConfigurationClass')
+#set ($confDoc = $xwiki.getDocument('XWiki.JIRAPro.OAuth.Config'))
+#set ($confObjects = $confDoc.getObjects($jiraOAuthClass))
+#set ($oidcConfObjects = $confDoc.getObjects('XWiki.OIDC.ClientConfigurationClass'))
+#if ($xcontext.action == 'get')
+  #if ($request.getParameter('save') == 'true')
+    ## Save the changes
+    #if ($services.csrf.isTokenValid($!request.form_token))
+      #set ($mainClassIdMatcher = $regextool.compile('JIRA.JIRAConfigClass_(\d+)_id'))
+      #set ($usedOIDCConfigName = [])
+      #foreach ($obj in $confObjects)
+        ## Update JIRA OAuth object
+        #set ($formIdFieldName = "${jiraOAuthClass}_${obj.number}_id")
+        #set ($formRequireAuthFieldName = "${jiraOAuthClass}_${obj.number}_requireAuthentication")
+        #set ($formIdValue = $request.getParameter($formIdFieldName))
+        #set ($oidcConfigId = "jiraserver-oauth-$formIdValue")
+        #set ($formRequireAuthValue = $request.getParameter($formRequireAuthFieldName))
+        #if ($formIdValue != $NULL &amp;&amp; $formRequireAuthValue != $NULL)
+          #set ($previousId = $obj.getValue('id'))
+          #set ($discard = $usedOIDCConfigName.add($oidcConfigId))
+          ## Update JIRA OAuth object
+          #set ($discard = $obj.set('id', $formIdValue))
+          #set ($discard = $obj.set('requireAuthentication', $formRequireAuthValue))
+          #set ($discard = $obj.set('oidcConfigName', $oidcConfigId))
+          ## Update OIDC object
+          #set ($oidcObject = $NULL)
+          #foreach ($oidcObj in $oidcConfObjects)
+            #if ($oidcObj.getValue('configurationName') == "jiraserver-oauth-$previousId")
+              #set ($oidcObject = $oidcObj)
+            #end
+          #end
+          #if ($oidcObject == $NULL)
+            #set ($oidcObject = $confDoc.newObject($oidcConfClass))
+          #end
+          #set ($formClientIdFieldName = "${oidcConfClass}_${oidcObject.number}_clientId")
+          #set ($formClientSecretFieldName = "${oidcConfClass}_${oidcObject.number}_clientSecret")
+          #set ($formClientIdValue = $request.getParameter($formClientIdFieldName))
+          #set ($formClientSecretValue = $request.getParameter($formClientSecretFieldName))
+          ##
+          ## We need to get the JIRA Sever URL from the main config object from the form request
+          ##
+          #foreach ($param in $request.parameterMap.entrySet())
+            #set ($entryMatcher = $mainClassIdMatcher.matcher($param.key))
+            #if ($entryMatcher.find() &amp;&amp; $param.value[0] == $formIdValue)
+              #set ($baseUrl = $request.getParameter("JIRA.JIRAConfigClass_${entryMatcher.group(1)}_url"))
+            #end
+          #end
+          #set ($discard = $oidcObject.set('configurationName', $oidcConfigId))
+          #set ($discard = $oidcObject.set('clientId', $formClientIdValue))
+          #set ($discard = $oidcObject.set('clientSecret', $formClientSecretValue))
+          #set ($discard = $oidcObject.set('authorizationEndpoint', "${baseUrl}/rest/oauth2/latest/authorize"))
+          #set ($discard = $oidcObject.set('tokenEndpoint', "${baseUrl}/rest/oauth2/latest/token"))
+          #set ($discard = $oidcObject.set('tokenEndpointMethod', 'client_secret_post'))
+          #set ($discard = $oidcObject.set('tokenStorageScope', 'USER'))
+          #set ($discard = $oidcObject.set('scope', 'WRITE'))
+          #set ($discard = $oidcObject.set('userInfoSkip', 1))
+          #set ($discard = $oidcObject.set('enableUser', 0))
+          #set ($discard = $oidcObject.set('responseType', 'code'))
+          #set ($discard = $oidcObject.set('skipLogoutIdToken', 0))
+        #else
+          ## Seem that the object is not any more in the form, so drop it
+          #set ($discard = $confDoc.removeObject($obj))
+        #end
+      #end
+      ## Clean OIDC config objects which are not used any more
+      #foreach ($oidcObj in $oidcConfObjects)
+        #if (!$usedOIDCConfigName.contains($oidcObj.getValue('configurationName')))
+          #set ($discard = $confDoc.removeObject($oidcObj))
+        #end
+      #end
+      #set ($discard = $confDoc.save())
+    #end
+  #else
+    ## Show the content
+    #set ($configId = $request.id)
+    #set ($oidcConfigId = "jiraserver-oauth-$configId")
+    #set ($confObj = $NULL)
+    #set ($oidcConfObject = $NULL)
+    #foreach ($o in $confObjects)
+      #if ($o.getValue('id') == $configId)
+        #set ($confObj = $o)
+      #end
+    #end
+    #foreach ($o in $oidcConfObjects)
+      #if ($o.getValue('configurationName') == $oidcConfigId)
+        #set ($oidcConfObject = $o)
+      #end
+    #end
+    #if ($confObj == $NULL)
+      #set ($confObj = $confDoc.newObject($jiraOAuthClass))
+      #set ($discard = $confObj.set('id', $configId))
+      #set ($discard = $confObj.set('oidcConfigName', $oidcConfigId))
+      #set ($discard = $confDoc.save())
+    #end
+    #if ($oidcConfObject == $NULL)
+      #set ($oidcConfObject = $confDoc.newObject($oidcConfClass))
+      #set ($discard = $oidcConfObject.set('configurationName', $oidcConfigId))
+      #set ($discard = $confDoc.save())
+    #end
+    $confObj.display('id', 'hidden')
+
+    {{html clean="false"}}
+    &lt;dl&gt;
+      &lt;dd&gt;
+        &lt;label for="${jiraOAuthClass}_${confObj.number}_requireAuthentication"&gt;
+          {{/html}}
+
+          $confObj.display('requireAuthentication', 'edit')
+
+          {{html clean="false"}}
+          $services.localization.render('com.xwiki.jirapro.oauth.requireAuthentication', 'html/5.0')
+          &lt;span class="xHint"&gt;$services.localization.render('com.xwiki.jirapro.oauth.requireAuthentication_hint', 'html/5.0')&lt;/span&gt;
+        &lt;/label&gt;
+      &lt;/dd&gt;
+      &lt;dt&gt;
+        &lt;label for="${oidcConfClass}_${oidcConfObject.number}_clientId"&gt;$services.localization.render('com.xwiki.jirapro.oauth.clientId', 'html/5.0')&lt;/label&gt;
+      &lt;/dt&gt;
+      &lt;dd&gt;
+        {{/html}}
+
+        $oidcConfObject.display('clientId', 'edit')
+
+        {{html clean="false"}}
+      &lt;/dd&gt;
+      &lt;dt&gt;
+        &lt;label for="${oidcConfClass}_${oidcConfObject.number}_clientSecret"&gt;$services.localization.render('com.xwiki.jirapro.oauth.clientSecret', 'html/5.0')&lt;/label&gt;
+      &lt;/dt&gt;
+      &lt;dd&gt;
+        {{/html}}
+
+        $oidcConfObject.display('clientSecret', 'edit')
+
+        {{html clean="false"}}
+      &lt;/dd&gt;
+    &lt;/dl&gt;
+    {{/html}}
+  #end
+#end
+{{/velocity}}</content>
+</xwikidoc>

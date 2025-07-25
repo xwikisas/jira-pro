@@ -34,6 +34,9 @@
   <properties>
     <xwiki.extension.name>JIRA Pro OAuth</xwiki.extension.name>
     <xwiki.extension.category>other</xwiki.extension.category>
+    <xwiki.extension.licensing.excludedDocuments>
+      XWiki.JIRAPro.OAuth.Config
+    </xwiki.extension.licensing.excludedDocuments>
   </properties>
   <dependencies>
     <dependency>
@@ -47,4 +50,20 @@
       <version>${licensing.version}</version>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
+        <configuration>
+          <entries>
+            <entry>
+              <document>XWiki.JIRAPro.OAuth.Config</document>
+              <type>configuration</type>
+            </entry>
+          </entries>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
