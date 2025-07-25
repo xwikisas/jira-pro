@@ -20,7 +20,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc xmlns:xwiki="http://www.xwiki.org" version="1.5" reference="XWiki.JIRAPro.Translations" locale="">
+<xwikidoc version="1.5" reference="XWiki.JIRAPro.Translations" locale="">
   <web>XWiki.JIRAPro</web>
   <name>Translations</name>
   <language/>
@@ -34,12 +34,17 @@
   <title>Translations</title>
   <comment/>
   <minorEdit>false</minorEdit>
-  <syntaxId>xwiki/2.1</syntaxId>
+  <syntaxId>plain/1.0</syntaxId>
   <hidden>true</hidden>
   <content>com.xwiki.jirapro.oauth.mustbeauthenticated.description=You must be authenticated in JIRA to be able to see the content from JIRA.
 com.xwiki.jirapro.oauth.mustbeauthenticated.link=Click here to authenticate to JIRA
 com.xwiki.jirapro.oauth.mightneedtoauthenticate.description=The result show by the is limited to the public content.
-com.xwiki.jirapro.oauth.mightneedtoauthenticate.link=Click here to authenticate to JIRA and to see the full content</content>
+com.xwiki.jirapro.oauth.mightneedtoauthenticate.link=Click here to authenticate to JIRA and to see the full content
+com.xwiki.jirapro.oauth.oauth=OAuth
+com.xwiki.jirapro.oauth.requireAuthentication=Require authentication to see the content
+com.xwiki.jirapro.oauth.requireAuthentication_hint=When enabled it mean that the user won't be able to use this JIRA server until the user do the authentication process. It also means that no content will be shown in the macro. Generally for private JIRA server it's recommended to be enabled. If disabled it mean that the user will be able to see the public content from JIRA until the user process of the authentication.
+com.xwiki.jirapro.oauth.clientId=Client ID
+com.xwiki.jirapro.oauth.clientSecret=Secret</content>
   <object>
     <name>XWiki.JIRAPro.Translations</name>
     <number>0</number>
