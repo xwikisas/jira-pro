@@ -42,7 +42,7 @@ com.xwiki.jirapro.oauth.mightneedtoauthenticate.description=The result show by t
 com.xwiki.jirapro.oauth.mightneedtoauthenticate.link=Click here to authenticate to JIRA and to see the full content
 com.xwiki.jirapro.oauth.oauth=OAuth
 com.xwiki.jirapro.oauth.requireAuthentication=Require authentication to see the content
-com.xwiki.jirapro.oauth.requireAuthentication_hint=When enabled it mean that the user won't be able to use this JIRA server until the user do the authentication process. It also means that no content will be shown in the macro. Generally for private JIRA server it's recommended to be enabled. If disabled it mean that the user will be able to see the public content from JIRA until the user process of the authentication.
+com.xwiki.jirapro.oauth.requireAuthentication_hint=When enabled it mean that the user won't be able to use this JIRA server until the user do the authentication process. Generally for private JIRA server it's recommended to be enabled.
 com.xwiki.jirapro.oauth.clientId=Client ID
 com.xwiki.jirapro.oauth.clientSecret=Secret</content>
   <object>
