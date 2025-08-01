@@ -78,7 +78,7 @@
       <customDisplay/>
       <defaultValue/>
       <disabled>0</disabled>
-      <displayFormType>select</displayFormType>
+      <displayFormType>checkbox</displayFormType>
       <displayType/>
       <hint/>
       <name>requireAuthentication</name>
