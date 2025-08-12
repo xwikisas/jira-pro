@@ -20,14 +20,12 @@
 package com.xwiki.jirapro.oauth.internal;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -86,12 +84,10 @@ public class JIRAOAuthAuthenticatorFactory implements JIRAAuthenticatorFactory
         } catch (XWikiException e) {
             throw new JIRAAuthenticatorException("Can't get JIRA OAuth configuration document", e);
         }
-        Optional<BaseObject> authObj = doc.getXObjects(OAUTH_DATA_CLASS_REFERENCE)
-            .stream().filter(x -> StringUtils.equals(serverId, (x.getStringValue(CONFIG_ID_FIELD))))
-            .findFirst();
-        if (authObj.isPresent()) {
-            int requireAuthentication = authObj.get().getIntValue("requireAuthentication");
-            String configName = authObj.get().getStringValue("oidcConfigName");
+        BaseObject authObj = doc.getXObject(OAUTH_DATA_CLASS_REFERENCE, CONFIG_ID_FIELD, serverId, false);
+        if (authObj != null) {
+            int requireAuthentication = authObj.getIntValue("requireAuthentication");
+            String configName = authObj.getStringValue("oidcConfigName");
             JIRAOAuthAuthenticator authenticator;
             try {
                 authenticator =
