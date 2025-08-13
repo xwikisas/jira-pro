@@ -29,7 +29,7 @@
   </parent>
   <groupId>com.xwiki.jirapro</groupId>
   <artifactId>jira-pro</artifactId>
-  <version>1.0.0-beta-2-SNAPSHOT</version>
+  <version>1.0.0-beta-2</version>
   <name>JIRA Pro - Parent POM</name>
   <packaging>pom</packaging>
   <issueManagement>
@@ -40,7 +40,7 @@
     <connection>scm:git:git@github.com:xwikisas/jira-pro.git</connection>
     <developerConnection>scm:git:git@github.com:xwikisas/jira-pro.git</developerConnection>
     <url>https://github.com/xwikisas/jira-pro/tree/main</url>
-    <tag>HEAD</tag>
+    <tag>jira-pro-1.0.0-beta-2</tag>
   </scm>
   <properties>
     <licensing.version>1.29</licensing.version>
