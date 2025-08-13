@@ -57,9 +57,6 @@ public class JIRAOAuthAuthenticator implements JIRAAuthenticator
      */
     public static final String HINT = "oauth";
 
-    private static final String ONLY_OAUTH_JIRA_SERVER_SUPPORTED =
-        "DefaultRestClientProvider only support OAuthJIRAServer class";
-
     private String configurationName;
 
     private boolean isRequiringAuthentication;
