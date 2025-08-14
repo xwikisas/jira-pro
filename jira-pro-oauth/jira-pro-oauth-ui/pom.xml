@@ -37,6 +37,9 @@
     <xwiki.extension.licensing.excludedDocuments>
       XWiki.JIRAPro.OAuth.Config
     </xwiki.extension.licensing.excludedDocuments>
+    <xwiki.extension.licensing.publicDocuments>
+      XWiki.JIRAPro.OAuth.OAuthConfigDisplayer
+    </xwiki.extension.licensing.publicDocuments>
   </properties>
   <dependencies>
     <dependency>

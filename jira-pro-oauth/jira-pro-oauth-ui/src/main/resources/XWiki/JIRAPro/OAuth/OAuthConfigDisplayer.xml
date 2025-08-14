@@ -37,6 +37,10 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity}}
+#if (!$services.promacrolicensing.hasLicensureForEntity($doc.documentReference))
+  {{missingLicenseMessage extensionName="com.xwiki.jirapro.oauth.extension.name"/}}
+  #stop
+#end
 #set ($jiraOAuthClass = 'XWiki.JIRAPro.OAuth.ConfigClass')
 #set ($oidcConfClass = 'XWiki.OIDC.ClientConfigurationClass')
 #set ($confDoc = $xwiki.getDocument('XWiki.JIRAPro.OAuth.Config'))
