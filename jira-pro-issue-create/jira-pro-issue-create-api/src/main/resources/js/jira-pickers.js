@@ -17,6 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+const jiraIssueCreationServiceRef = 'XWiki.JIRAPro.IssueCreate.JiraIssueCreationService'
 
 require.config({
   paths: {
@@ -26,7 +27,7 @@ require.config({
 });
 
 define('xwiki-jira-suggestJiraInstance', ['jquery', 'xwiki-selectize'], function($) {
-  const jiraService = new XWiki.Document("JiraIssueCreationService", "JiraCode");
+  const jiraService = new XWiki.Document(XWiki.Model.resolve(jiraIssueCreationServiceRef, XWiki.EntityType.DOCUMENT));
   const jiraParameters = {
     outputSyntax: "plain",
     action: "suggestInstance"
@@ -78,7 +79,7 @@ define('xwiki-jira-suggestJiraInstance', ['jquery', 'xwiki-selectize'], function
 });
 
 define('xwiki-jira-suggestJiraProject', ['jquery', 'xwiki-selectize'], function($) {
-  const jiraService = new XWiki.Document("JiraIssueCreationService", "JiraCode");
+  const jiraService = new XWiki.Document(XWiki.Model.resolve(jiraIssueCreationServiceRef, XWiki.EntityType.DOCUMENT));
 
   var getSettings = function(select, getInstance) {
     return {
@@ -115,7 +116,7 @@ define('xwiki-jira-suggestJiraProject', ['jquery', 'xwiki-selectize'], function(
 });
 
 define('xwiki-jira-suggestJiraIssueType', ['jquery', 'xwiki-selectize'], function($) {
-  const jiraService = new XWiki.Document("JiraIssueCreationService", "JiraCode");
+  const jiraService = new XWiki.Document(XWiki.Model.resolve(jiraIssueCreationServiceRef, XWiki.EntityType.DOCUMENT));
   var getSettings = function(select, getInstance, getProject) {
     return {
       load: function(typedText, callback) {
@@ -147,7 +148,7 @@ define('xwiki-jira-suggestJiraIssueType', ['jquery', 'xwiki-selectize'], functio
 });
 
 define('xwiki-jira-suggestJiraAssignableUser', ['jquery', 'xwiki-selectize'], function($) {
-  const jiraService = new XWiki.Document("JiraIssueCreationService", "JiraCode");
+  const jiraService = new XWiki.Document(XWiki.Model.resolve(jiraIssueCreationServiceRef, XWiki.EntityType.DOCUMENT));
   var getSettings = function(select, getInstance, getProject) {
     return {
       load: function(typedText, callback) {
@@ -179,7 +180,7 @@ define('xwiki-jira-suggestJiraAssignableUser', ['jquery', 'xwiki-selectize'], fu
 });
 
 define('xwiki-jira-suggestJiraUser', ['jquery', 'xwiki-selectize'], function($) {
-  const jiraService = new XWiki.Document("JiraIssueCreationService", "JiraCode");
+  const jiraService = new XWiki.Document(XWiki.Model.resolve(jiraIssueCreationServiceRef, XWiki.EntityType.DOCUMENT));
   var getSettings = function(select, getInstance) {
     return {
       load: function(typedText, callback) {
@@ -904,7 +905,7 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
     const projectKey = $('#projectKey').val().trim();
     const issueType = $('#issueType').val().trim();
 
-    const jiraService = new XWiki.Document("JiraIssueCreationService", "JiraCode");
+    const jiraService = new XWiki.Document(XWiki.Model.resolve(jiraIssueCreationServiceRef, XWiki.EntityType.DOCUMENT));
 
     const jiraFieldsMetadataParameters = {
       outputSyntax: "plain",
@@ -1036,7 +1037,7 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
         const issueType = $('#issueType').val().trim();
 
         if (instanceId && projectKey && issueType) {
-            const jiraService = new XWiki.Document("JiraIssueCreationService", "JiraCode");
+            const jiraService = new XWiki.Document(XWiki.Model.resolve(jiraIssueCreationServiceRef, XWiki.EntityType.DOCUMENT));
 
             const jiraFieldsMetadataParameters = {
               outputSyntax: "plain",

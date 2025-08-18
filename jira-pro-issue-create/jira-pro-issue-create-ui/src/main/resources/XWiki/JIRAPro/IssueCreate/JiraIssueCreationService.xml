@@ -20,14 +20,14 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="JiraCode.JiraIssueCreationService" locale="">
-  <web>JiraCode</web>
+<xwikidoc version="1.5" reference="XWiki.JIRAPro.IssueCreate.JiraIssueCreationService" locale="">
+  <web>XWiki.JIRAPro.IssueCreate</web>
   <name>JiraIssueCreationService</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <parent>Main.WebHome</parent>
+  <parent>WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
