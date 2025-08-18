@@ -75,6 +75,13 @@
 #end
 {{/velocity}}
 {{velocity wiki="false"}}
+#if ($request.action == 'licenceStatus' &amp;&amp; !$services.promacrolicensing.hasLicensureForEntity($doc.documentReference))
+  {{missingLicenseMessage extensionName="com.xwiki.jirapro.oauth.extension.name"/}}
+#end
+#if (!$services.promacrolicensing.hasLicensureForEntity($doc.documentReference))
+  ## Avoid to execute any thing else if licence is not valid
+  #stop
+#end
 #set ($text = "")
 #if ($request.text)
   #set ($text = $request.text)
