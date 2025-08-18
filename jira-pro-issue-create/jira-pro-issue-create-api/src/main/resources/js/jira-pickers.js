@@ -48,9 +48,30 @@ define('xwiki-jira-suggestJiraInstance', ['jquery', 'xwiki-selectize'], function
       $(this).xwikiSelectize($.extend(getSettings($(this)), settings));
       currentSelect.on("change", function(event) {
         for (suggest of currentSelect.parents("form").find('.suggest-jira-project, .suggest-jira-issueType')) {
-          suggest.selectize.clearOptions();
-          suggest.selectize.onSearchChange();
+          if (suggest?.selectize) {
+            suggest?.selectize.clearOptions();
+            suggest?.selectize.onSearchChange();
+          }
         }
+
+        const actionRequiredContainer = $('#issueCreationFormAuthenticatorActionRequired');
+        actionRequiredContainer.empty();
+
+        const getInstance = function() {
+          return currentSelect.parents("form").find('.suggest-jira-instance').val();
+        };
+
+        const jiraParameters = {
+          outputSyntax: "plain",
+          instanceId: getInstance(),
+          action: "getAuthenticationActionRequiredUI"
+        };
+
+        $.get(jiraService.getURL('get', $.param($.extend({}, jiraParameters)))).done((data) => {
+          if (data.content) {
+            actionRequiredContainer.append(data.content);
+          }
+        });
       });
     });
   };
@@ -903,6 +924,9 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
         return reject();
       }
       $.getJSON(jiraService.getURL('get', $.param($.extend({}, jiraFieldsMetadataParameters)))).done((data) => {
+        if (!data.values) {
+          return reject(data);
+        }
         data.values.toSorted((a, b) => b.required - a.required).forEach((field) => {
           if (["issuetype", "project", "reporter"].includes(field.fieldId)) {
             return;
@@ -929,48 +953,6 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
     // Remove existing form if it already exists
     $('#issueCreationFormWrapper').remove();
 
-    const formTemplate = `
-      <div id="issueCreationFormWrapper">
-        <form id="issueCreationForm">
-
-            <div class="form-group jira-creation-parameter mandatory">
-              <div class="jira-creation-parameter-name">
-                <label for="instance">Instance</label>
-              </div>
-              <select class="suggest-jira-instance" id="instanceId">
-                <option value="">Select the instance</option>
-              </select>
-            </div>
-
-            <div class="form-group jira-creation-parameter mandatory">
-              <div class="jira-creation-parameter-name">
-                <label for="projectKey">Project</label>
-              </div>
-              <select class="suggest-jira-project" id="projectKey">
-                <option value="">Select the project</option>
-              </select>
-            </div>
-
-            <div class="form-group jira-creation-parameter mandatory">
-              <div class="jira-creation-parameter-name">
-                <label for="issueType">Issue Type</label>
-              </div>
-              <select class="suggest-jira-issueType" id="issueType">
-                <option value="">Select the issue type</option>
-              </select>
-            </div>
-
-            <div id="inner-form">
-              <div id="jira-issue-creation-errors">
-              </div>
-            </div>
-        </form>
-        <div>
-          <p class="btn btn-primary jira-create-btn" id="createIssueBtn">Create Issue</p>
-        </div>
-      </div>`
-      ;
-
     const createIssueError = function(message, clear) {
 
       const container = $("#jira-issue-creation-errors")
@@ -988,12 +970,59 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
       $(".jira-issue-creation-error-message")[0].scrollIntoView();
     }
 
-    // Append form to Tab.
-    container.append(formTemplate);
-    const createIssueBtn = $('#createIssueBtn');
+    const formWrapper = $('<div id="issueCreationFormWrapper"></div>');
+    container.append(formWrapper);
+
+    const formBody = $('<form id="issueCreationForm"></form>');
+    formWrapper.append(formBody);
+
+    const requiredActionUIXP = $(`
+        <div id="issueCreationFormAuthenticatorActionRequired">
+        </div>
+    `);
+    formBody.append(requiredActionUIXP);
+
+    const projectGroup = $(`
+        <div class="form-group jira-creation-parameter mandatory">
+          <div class="jira-creation-parameter-name">
+            <label for="projectKey">Project</label>
+          </div>
+          <select class="suggest-jira-project" id="projectKey">
+            <option value="">Select the project</option>
+          </select>
+        </div>
+    `)
+    formBody.append(projectGroup);
+
+    const issueTypeGroup = $(`
+        <div class="form-group jira-creation-parameter mandatory">
+          <div class="jira-creation-parameter-name">
+            <label for="issueType">Issue Type</label>
+          </div>
+          <select class="suggest-jira-issueType" id="issueType">
+            <option value="">Select the issue type</option>
+          </select>
+        </div>
+    `)
+    formBody.append(issueTypeGroup);
+
+    const innerForm = $(`
+        <div id="inner-form">
+          <div id="jira-issue-creation-errors">
+          </div>
+        </div>
+    `);
+    formBody.append(innerForm);
+
+    const formFooter = $(`<div></div>`);
+    formWrapper.append(formFooter);
+
+    const createIssueBtn = $('<p class="btn btn-primary jira-create-btn" id="createIssueBtn">Create Issue</p>')
+    formFooter.append(createIssueBtn);
+    // const createIssueBtn = $('#createIssueBtn');
 
     // Handle create button click
-    $('#createIssueBtn').on('click', function () {
+    createIssueBtn.on('click', function () {
         if (createIssueBtn.attr("disabled")) {
           return;
         }
@@ -1133,6 +1162,15 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
 
   const attachServerPicker = function(event, data) {
     let container = $((data && data.elements) || document);
+    $(".macro-editor[data-macroid='jira/xwiki/2.1']").find("#macroParameterTreeNode-instance").find(".macro-parameter[data-id='id']").each(function() {
+      const field = $(this).find('.macro-parameter-field');
+
+      field.empty();
+      const select = $("<select></select>");
+      field.append(select);
+
+      select.addClass("suggest-jira-instance");
+    });
 
     container.find(".macro-parameter[data-type='org.xwiki.contrib.jira.config.JIRAServer']").each(function () {
       $(this).find("select").suggestJiraInstance();
@@ -1189,8 +1227,8 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
     });
   }
 
-  $(document).on('xwiki:dom:updated', attachContentPicker);
   $(document).on('xwiki:dom:updated', attachServerPicker);
-  attachContentPicker();
+  $(document).on('xwiki:dom:updated', attachContentPicker);
   attachServerPicker();
+  attachContentPicker();
 });

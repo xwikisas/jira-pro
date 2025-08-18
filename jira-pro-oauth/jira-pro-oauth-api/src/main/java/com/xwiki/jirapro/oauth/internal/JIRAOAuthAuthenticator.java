@@ -19,6 +19,10 @@
  */
 package com.xwiki.jirapro.oauth.internal;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -38,6 +42,16 @@ import org.xwiki.contrib.oidc.OAuth2TokenStore;
 import org.xwiki.contrib.oidc.auth.store.OIDCClientConfiguration;
 import org.xwiki.contrib.oidc.auth.store.OIDCClientConfigurationStore;
 import org.xwiki.job.Job;
+import org.xwiki.localization.ContextualLocalizationManager;
+import org.xwiki.rendering.block.Block;
+import org.xwiki.rendering.block.FormatBlock;
+import org.xwiki.rendering.block.GroupBlock;
+import org.xwiki.rendering.block.LinkBlock;
+import org.xwiki.rendering.block.SpaceBlock;
+import org.xwiki.rendering.block.WordBlock;
+import org.xwiki.rendering.listener.Format;
+import org.xwiki.rendering.listener.reference.ResourceReference;
+import org.xwiki.rendering.listener.reference.ResourceType;
 
 import com.atlassian.jira.rest.client.api.AuthenticationHandler;
 
@@ -57,6 +71,10 @@ public class JIRAOAuthAuthenticator implements JIRAAuthenticator
      */
     public static final String HINT = "oauth";
 
+    private static final String BLOCK_PARAM_CLASS = "class";
+
+    private static final String BLOCK_PARAM_CLASS_VALUE_WARNINGMESSAGE = "box warningmessage";
+
     private String configurationName;
 
     private boolean isRequiringAuthentication;
@@ -72,6 +90,9 @@ public class JIRAOAuthAuthenticator implements JIRAAuthenticator
 
     @Inject
     private Logger logger;
+
+    @Inject
+    private ContextualLocalizationManager localization;
 
     /**
      * Configure the authenticator with the parameter set into the configuration.
@@ -158,5 +179,53 @@ public class JIRAOAuthAuthenticator implements JIRAAuthenticator
     public boolean isRequiringAuthentication()
     {
         return isRequiringAuthentication;
+    }
+
+    /**
+     * Provide a block to show to the user if the user is not already authenticated.
+     *
+     * @param mustBeAuthenticated must be true, if in the UI the user must be authenticated, otherwise false when
+     *     the feature are still usable in limited mode.
+     * @param isInline if the content should be placed inline.
+     * @param redirectUrl the URL to redirect after the authentication was done. Generally it should be something
+     *     like {@code doc.URL} or {@code context.getURL().toString()}.
+     * @return if the user need to be authenticated the warning block to show to user to proceed of the authentication,
+     *     otherwise an empty block.
+     */
+    public Block getWarningMacroBlock(boolean mustBeAuthenticated, boolean isInline, String redirectUrl)
+    {
+        if (!isAuthenticatingRequest()) {
+            return isInline ? new FormatBlock() : new GroupBlock();
+        }
+        String linkTranslationKey;
+        String descriptionTranslationKey;
+        if (mustBeAuthenticated) {
+            linkTranslationKey = "com.xwiki.jirapro.oauth.mustbeauthenticated.description";
+            descriptionTranslationKey = "com.xwiki.jirapro.oauth.mustbeauthenticated.link";
+        } else {
+            linkTranslationKey = "com.xwiki.jirapro.oauth.mightneedtoauthenticate.description";
+            descriptionTranslationKey = "com.xwiki.jirapro.oauth.mightneedtoauthenticate.link";
+        }
+        String configId = getConfigurationName();
+        ResourceReference reference = new ResourceReference("XWiki.JIRAPro.OAuth.JiraAuthorize", ResourceType.DOCUMENT);
+        reference.setParameter("queryString",
+            "configId=" + URLEncoder.encode(configId, StandardCharsets.UTF_8)
+                + "&redirectUrl=" + URLEncoder.encode(redirectUrl,
+                StandardCharsets.UTF_8));
+        LinkBlock link = new LinkBlock(
+            localization.getTranslation(linkTranslationKey).render().getChildren(),
+            reference,
+            false);
+        List<Block> blocks = List.of(
+            localization.getTranslation(descriptionTranslationKey).render(),
+            new SpaceBlock(),
+            link,
+            new WordBlock("."));
+        if (isInline) {
+            return new FormatBlock(blocks, Format.NONE, Map.of(BLOCK_PARAM_CLASS,
+                BLOCK_PARAM_CLASS_VALUE_WARNINGMESSAGE));
+        } else {
+            return new GroupBlock(blocks, Map.of(BLOCK_PARAM_CLASS, BLOCK_PARAM_CLASS_VALUE_WARNINGMESSAGE));
+        }
     }
 }

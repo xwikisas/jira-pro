@@ -19,9 +19,6 @@
  */
 package com.xwiki.jirapro.oauth.internal.transformation;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,14 +31,6 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.contrib.jira.config.JIRAServer;
 import org.xwiki.localization.ContextualLocalizationManager;
 import org.xwiki.rendering.block.Block;
-import org.xwiki.rendering.block.FormatBlock;
-import org.xwiki.rendering.block.GroupBlock;
-import org.xwiki.rendering.block.LinkBlock;
-import org.xwiki.rendering.block.SpaceBlock;
-import org.xwiki.rendering.block.WordBlock;
-import org.xwiki.rendering.listener.Format;
-import org.xwiki.rendering.listener.reference.ResourceReference;
-import org.xwiki.rendering.listener.reference.ResourceType;
 import org.xwiki.rendering.transformation.MacroTransformationContext;
 
 import com.xpn.xwiki.XWikiContext;
@@ -70,8 +59,8 @@ public class JIRAMacroTransformation<P> implements org.xwiki.contrib.jira.macro.
     private ContextualLocalizationManager localization;
 
     @Override
-    public List<Block> transform(List<Block> blocks, P parameters,
-        MacroTransformationContext context, JIRAServer jiraServer, String macroName)
+    public List<Block> transform(List<Block> blocks, P parameters, MacroTransformationContext context,
+        JIRAServer jiraServer, String macroName)
     {
         if (jiraServer.getJiraAuthenticator().isEmpty() || !(jiraServer.getJiraAuthenticator()
             .get() instanceof JIRAOAuthAuthenticator))
@@ -84,49 +73,17 @@ public class JIRAMacroTransformation<P> implements org.xwiki.contrib.jira.macro.
         }
         try {
             if (authenticator.isRequiringAuthentication()) {
-                return List.of(
-                    getWarningMacroBlock(authenticator.getConfigurationName(),
-                        "com.xwiki.jirapro.oauth.mustbeauthenticated.description",
-                        "com.xwiki.jirapro.oauth.mustbeauthenticated.link",
-                        context.isInline()));
+                return List.of(authenticator.getWarningMacroBlock(true, context.isInline(),
+                    contextProvider.get().getURL().toString()));
             } else {
                 List<Block> result = new ArrayList<>(blocks);
-                result.add(
-                    getWarningMacroBlock(authenticator.getConfigurationName(),
-                        "com.xwiki.jirapro.oauth.mightneedtoauthenticate.description",
-                        "com.xwiki.jirapro.oauth.mightneedtoauthenticate.link",
-                        context.isInline()));
+                result.add(authenticator.getWarningMacroBlock(false, context.isInline(),
+                    contextProvider.get().getURL().toString()));
                 return result;
             }
         } catch (ComponentLookupException | UnsupportedEncodingException e) {
             logger.error("Cant' get renderer component", e);
             return blocks;
-        }
-    }
-
-    private Block getWarningMacroBlock(String configId, String descriptionTranslationKey,
-        String linkTranslationKey, boolean isInline)
-        throws ComponentLookupException, UnsupportedEncodingException
-    {
-        ResourceReference reference = new ResourceReference("XWiki.JIRAPro.OAuth.JiraAuthorize", ResourceType.DOCUMENT);
-        reference.setParameter("queryString",
-            "configId=" + URLEncoder.encode(configId, StandardCharsets.UTF_8)
-                + "&redirectUrl=" + URLEncoder.encode(contextProvider.get().getURL().toString(),
-                StandardCharsets.UTF_8));
-        LinkBlock link = new LinkBlock(
-            localization.getTranslation(linkTranslationKey).render().getChildren(),
-            reference,
-            false);
-        List<Block> blocks = List.of(
-            localization.getTranslation(descriptionTranslationKey).render(),
-            new SpaceBlock(),
-            link,
-            new WordBlock("."));
-        if (isInline) {
-            return new FormatBlock(blocks, Format.NONE, Map.of(BLOCK_PARAM_CLASS,
-                BLOCK_PARAM_CLASS_VALUE_WARNINGMESSAGE));
-        } else {
-            return new GroupBlock(blocks, Map.of(BLOCK_PARAM_CLASS, BLOCK_PARAM_CLASS_VALUE_WARNINGMESSAGE));
         }
     }
 }

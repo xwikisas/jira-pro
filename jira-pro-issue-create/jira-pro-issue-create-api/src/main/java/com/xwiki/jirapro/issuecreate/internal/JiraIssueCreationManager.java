@@ -38,6 +38,14 @@ public interface JiraIssueCreationManager
     String suggestInstance();
 
     /**
+     * Gets the ID of the Authenticator.
+     *
+     * @param instanceId the instance to get the Authenticator for.
+     * @return The ID of the Authenticator if one is configured, an empty string otherwise.
+     */
+    String getAuthenticatorID(String instanceId);
+
+    /**
      * Suggest JIRA projects to pick from.
      * 
      * @param instanceId the instance the projects should be retrieved from

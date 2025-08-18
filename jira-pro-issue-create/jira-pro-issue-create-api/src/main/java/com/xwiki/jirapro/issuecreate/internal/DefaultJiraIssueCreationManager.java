@@ -119,6 +119,25 @@ public class DefaultJiraIssueCreationManager implements JiraIssueCreationManager
     }
 
     /**
+     *
+     * {@inheritDoc}
+     *
+     * @see com.xwiki.bmc.macros.jira.internal.JiraIssueCreationManager#getAuthenticatorID(java.lang.String)
+     */
+    public String getAuthenticatorID(String instanceId)
+    {
+        JIRAServer jiraServer = jiraConfiguration.getJIRAServers().get(instanceId);
+        Optional<JIRAAuthenticator> optionalAuthenticator = jiraServer.getJiraAuthenticator();
+
+        if (optionalAuthenticator.isPresent()) {
+            JIRAAuthenticator authenticator = optionalAuthenticator.get();
+            return authenticator.getClass().getName();
+        }
+
+        return "";
+    }
+
+    /**
      * {@inheritDoc}
      * 
      * @see JiraIssueCreationManager#suggestProject(java.lang.String,

@@ -39,6 +39,7 @@
   <content>{{velocity output="false"}}
 ## Request action parameter:
 ##   * suggestInstance
+##   * getAuthenticationActionRequiredUI
 ##   * suggestProject
 ##   * suggestIssueType
 ##   * suggestAssignableUser
@@ -47,6 +48,12 @@
 ##   * createIssue
 #macro (suggestInstance)
   #set ($jsonData = $services.jiraIssueCreation.suggestInstance())
+#end
+#macro (getAuthenticationActionRequiredUI)
+  #set ($macro.authenticator = $services.component.getInstance('org.xwiki.contrib.jira.config.JIRAConfiguration').jIRAServers[$request.instanceId].jiraAuthenticator.get())
+  #if ($macro.authenticator.class.name == 'com.xwiki.jirapro.oauth.internal.JIRAOAuthAuthenticator')
+    #set ($jsonData = $jsontool.serialize({"message": $services.rendering.render($macro.authenticator.getWarningMacroBlock(true, false, $doc.URL), $doc.syntax)}))
+  #end
 #end
 #macro (suggestProject $text)
   #set ($jsonData = $services.jiraIssueCreation.suggestProject($request.instanceId, $text))
@@ -74,6 +81,9 @@
 #end
 #if ($request.action == 'suggestInstance')
   #suggestInstance($text)
+#end
+#if ($request.action == 'getAuthenticationActionRequiredUI')
+  #getAuthenticationActionRequiredUI()
 #end
 #if ($request.action == 'suggestProject')
   #suggestProject($text)
