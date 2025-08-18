@@ -25,7 +25,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -80,8 +79,7 @@ public class JIRAMacroTransformation<P> implements org.xwiki.contrib.jira.macro.
             return blocks;
         }
         JIRAOAuthAuthenticator authenticator = (JIRAOAuthAuthenticator) jiraServer.getJiraAuthenticator().get();
-        Optional<String> token = authenticator.getOAuthToken();
-        if (token.isPresent()) {
+        if (authenticator.isAuthenticatingRequest()) {
             return blocks;
         }
         try {
