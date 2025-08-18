@@ -20,14 +20,14 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.5" reference="XWiki.JIRAPro.Translations" locale="">
-  <web>XWiki.JIRAPro</web>
+<xwikidoc version="1.5" reference="XWiki.JIRAPro.OAuth.Translations" locale="">
+  <web>XWiki.JIRAPro.OAuth</web>
   <name>Translations</name>
   <language/>
   <defaultLanguage>en</defaultLanguage>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <parent>XWiki.JIRAPro.WebHome</parent>
+  <parent>WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
@@ -46,7 +46,7 @@ com.xwiki.jirapro.oauth.requireAuthentication_hint=When enabled it mean that the
 com.xwiki.jirapro.oauth.clientId=Client ID
 com.xwiki.jirapro.oauth.clientSecret=Secret</content>
   <object>
-    <name>XWiki.JIRAPro.Translations</name>
+    <name>XWiki.JIRAPro.OAuth.Translations</name>
     <number>0</number>
     <className>XWiki.TranslationDocumentClass</className>
     <guid>37957d25-f6bf-4545-a3d4-7e4a329d0500</guid>
