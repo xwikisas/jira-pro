@@ -151,9 +151,9 @@ public class JIRAOAuthAuthenticator implements JIRAAuthenticator
     }
 
     /**
-     * @return true if the all request must be sent with authentication and no result is
-     * expected if no authentication is provided. And false generally in case of public JIRA instance where the
-     * authentication might be not mandatory but just to increase the user experience.
+     * @return true if the all request must be sent with authentication and no result is expected if no authentication
+     *     is provided. And false generally in case of public JIRA instance where the authentication might be not
+     *     mandatory but just to increase the user experience.
      */
     public boolean isRequiringAuthentication()
     {
