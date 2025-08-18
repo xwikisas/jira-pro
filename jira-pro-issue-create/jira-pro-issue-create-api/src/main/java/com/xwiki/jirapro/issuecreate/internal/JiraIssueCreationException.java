@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,20 +16,36 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
+ */
+package com.xwiki.jirapro.issuecreate.internal;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>com.xwiki.jirapro</groupId>
-    <artifactId>jira-pro</artifactId>
-    <version>1.0.0-beta-3-SNAPSHOT</version>
-  </parent>
-  <artifactId>jira-pro-oauth</artifactId>
-  <name>JIRA Pro - OAuth - Parent POM</name>
-  <packaging>pom</packaging>
-  <modules>
-    <module>jira-pro-oauth-api</module>
-    <module>jira-pro-oauth-ui</module>
-  </modules>
-</project>
+/**
+ * Exception related to Jira Issue Creation.
+ * 
+ * @version $Id$
+ */
+public class JiraIssueCreationException extends RuntimeException
+{
+    private static final long serialVersionUID = 8292166503343109177L;
+
+    /**
+     * Constructor.
+     * 
+     * @param message
+     */
+    JiraIssueCreationException(String message)
+    {
+        super(message);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param message
+     * @param cause
+     */
+    JiraIssueCreationException(String message, Throwable cause)
+    {
+        super(message, cause);
+    }
+}

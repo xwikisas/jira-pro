@@ -1,0 +1,2 @@
+com.xwiki.jirapro.issuecreate.JiraIssueCreationScriptService
+com.xwiki.jirapro.issuecreate.internal.DefaultJiraIssueCreationManager

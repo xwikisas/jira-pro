@@ -50,5 +50,6 @@
   </properties>
   <modules>
     <module>jira-pro-oauth</module>
+    <module>jira-pro-issue-create</module>
   </modules>
 </project>

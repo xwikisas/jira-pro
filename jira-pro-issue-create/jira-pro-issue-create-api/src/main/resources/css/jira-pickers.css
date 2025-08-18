@@ -1,0 +1,48 @@
+.jira-creation-parameter.mandatory .jira-creation-parameter-name::after {
+    color:#ca302c;
+    content:' *';
+}
+
+.jira-creation-parameter-array-items {
+    padding: .5em;
+}
+
+.jira-creation-parameter-array-item {
+    list-style: none;
+}
+
+.jira-creation-parameter-array-item-manager {
+    display: flex;
+}
+
+.jira-creation-parameter-array-item-container {
+    flex-grow: 1;
+}
+
+.jira-creation-parameter-array-item-delete-button {
+    flex-grow: 0;
+}
+
+.jira-creation-parameter-timetracking-inner {
+    padding-left: 1em;
+}
+
+.jira-creation-parameter-timetracking-inner .jira-creation-parameter.mandatory .jira-creation-parameter-name::after {
+    color:#00000000;
+    color:#00000000;
+    content:'';
+}
+
+.jira-issue-creation-error-message {
+    color: #ca302c;
+    font-weight: bold;
+}
+
+.jira-issue-creation-success-message {
+    color: #077537;
+    font-style: italic;
+}
+
+.jira-hidden {
+    display: none;
+}

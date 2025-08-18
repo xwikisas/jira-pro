@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,36 +18,26 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.xwiki.jirapro</groupId>
-    <artifactId>jira-pro-oauth</artifactId>
+    <artifactId>jira-pro-issue-create</artifactId>
     <version>1.0.0-beta-3-SNAPSHOT</version>
   </parent>
-  <artifactId>jira-pro-oauth-ui</artifactId>
-  <name>JIRA Pro - OAuth - UI</name>
+  <artifactId>jira-pro-issue-create-ui</artifactId>
   <packaging>xar</packaging>
-  <description>JIRA authentication with OAuth</description>
+  <name>JIRA Pro - Issue creation - UI</name>
+  <description>Extension containing the Jira macro with add issue feature.</description>
   <properties>
-    <xwiki.extension.name>JIRA Pro OAuth</xwiki.extension.name>
+    <xwiki.extension.name>JIRA issue creation</xwiki.extension.name>
     <xwiki.extension.category>other</xwiki.extension.category>
-    <xwiki.extension.licensing.excludedDocuments>
-      XWiki.JIRAPro.OAuth.Config
-    </xwiki.extension.licensing.excludedDocuments>
   </properties>
   <dependencies>
     <dependency>
       <groupId>com.xwiki.jirapro</groupId>
-      <artifactId>jira-pro-oauth-api</artifactId>
+      <artifactId>jira-pro-issue-create-api</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.contrib.jira</groupId>
-      <artifactId>jira-config-ui</artifactId>
-      <version>${jira.version}</version>
-      <type>xar</type>
     </dependency>
     <dependency>
       <groupId>com.xwiki.licensing</groupId>
@@ -56,20 +45,4 @@
       <version>${licensing.version}</version>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.xwiki.commons</groupId>
-        <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
-        <configuration>
-          <entries>
-            <entry>
-              <document>XWiki.JIRAPro.OAuth.Config</document>
-              <type>configuration</type>
-            </entry>
-          </entries>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

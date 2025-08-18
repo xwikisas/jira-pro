@@ -28,7 +28,7 @@
     <version>1.0.0-beta-3-SNAPSHOT</version>
   </parent>
   <artifactId>jira-pro-oauth-api</artifactId>
-  <name>JIRA Pro OAuth API</name>
+  <name>JIRA Pro - OAuth - API</name>
   <packaging>jar</packaging>
   <description>JIRA authentication with OAuth API</description>
   <properties>
