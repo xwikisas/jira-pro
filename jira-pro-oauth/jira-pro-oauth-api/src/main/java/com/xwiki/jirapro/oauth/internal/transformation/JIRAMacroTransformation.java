@@ -27,14 +27,16 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.slf4j.Logger;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.contrib.jira.config.JIRAServer;
+import org.xwiki.extension.ExtensionId;
 import org.xwiki.localization.ContextualLocalizationManager;
 import org.xwiki.rendering.block.Block;
+import org.xwiki.rendering.block.MacroBlock;
 import org.xwiki.rendering.transformation.MacroTransformationContext;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xwiki.jirapro.oauth.internal.JIRAOAuthAuthenticator;
+import com.xwiki.licensing.Licensor;
 
 /**
  * Macro transformation to add a message in case of the user is not logged in JIRA.
@@ -45,6 +47,8 @@ import com.xwiki.jirapro.oauth.internal.JIRAOAuthAuthenticator;
  */
 public class JIRAMacroTransformation<P> implements org.xwiki.contrib.jira.macro.JIRAMacroTransformation<P>
 {
+    private static final ExtensionId EXT_ID = new ExtensionId("com.xwiki.jirapro:jira-pro-oauth-ui");
+
     private static final String BLOCK_PARAM_CLASS = "class";
 
     private static final String BLOCK_PARAM_CLASS_VALUE_WARNINGMESSAGE = "box warningmessage";
@@ -58,6 +62,9 @@ public class JIRAMacroTransformation<P> implements org.xwiki.contrib.jira.macro.
     @Inject
     private ContextualLocalizationManager localization;
 
+    @Inject
+    private Licensor licensor;
+
     @Override
     public List<Block> transform(List<Block> blocks, P parameters, MacroTransformationContext context,
         JIRAServer jiraServer, String macroName)
@@ -67,23 +74,28 @@ public class JIRAMacroTransformation<P> implements org.xwiki.contrib.jira.macro.
         {
             return blocks;
         }
+
+        if (!licensor.hasLicensure(EXT_ID)) {
+            return List.of(new MacroBlock(
+                "missingLicenseMessage",
+                Map.of("extensionName", "com.xwiki.jirapro.oauth.extension.name"),
+                null,
+                context.isInline())
+            );
+        }
+
         JIRAOAuthAuthenticator authenticator = (JIRAOAuthAuthenticator) jiraServer.getJiraAuthenticator().get();
         if (authenticator.isAuthenticatingRequest()) {
             return blocks;
         }
-        try {
-            if (authenticator.isRequiringAuthentication()) {
-                return List.of(authenticator.getWarningMacroBlock(true, context.isInline(),
-                    contextProvider.get().getURL().toString()));
-            } else {
-                List<Block> result = new ArrayList<>(blocks);
-                result.add(authenticator.getWarningMacroBlock(false, context.isInline(),
-                    contextProvider.get().getURL().toString()));
-                return result;
-            }
-        } catch (ComponentLookupException | UnsupportedEncodingException e) {
-            logger.error("Cant' get renderer component", e);
-            return blocks;
+        if (authenticator.isRequiringAuthentication()) {
+            return List.of(authenticator.getWarningMacroBlock(true, context.isInline(),
+                contextProvider.get().getURL().toString()));
+        } else {
+            List<Block> result = new ArrayList<>(blocks);
+            result.add(authenticator.getWarningMacroBlock(false, context.isInline(),
+                contextProvider.get().getURL().toString()));
+            return result;
         }
     }
 }
