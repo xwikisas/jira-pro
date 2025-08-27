@@ -194,7 +194,7 @@ public class JIRAOAuthAuthenticator implements JIRAAuthenticator
      */
     public Block getWarningMacroBlock(boolean mustBeAuthenticated, boolean isInline, String redirectUrl)
     {
-        if (!isAuthenticatingRequest()) {
+        if (isAuthenticatingRequest()) {
             return isInline ? new FormatBlock() : new GroupBlock();
         }
         String linkTranslationKey;
