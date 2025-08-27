@@ -44,7 +44,6 @@ define('xwiki-jira-suggestJiraInstance', ['jquery', 'xwiki-selectize'], function
 
   $.fn.suggestJiraInstance = function(settings) {
     return this.each(function() {
-      // TODO: Get instance from nearby selectize.
       const currentSelect = $(this);
       $(this).xwikiSelectize($.extend(getSettings($(this)), settings));
       currentSelect.on("change", function(event) {
@@ -54,25 +53,6 @@ define('xwiki-jira-suggestJiraInstance', ['jquery', 'xwiki-selectize'], function
             suggest?.selectize.onSearchChange();
           }
         }
-
-        const actionRequiredContainer = $('#issueCreationFormAuthenticatorActionRequired');
-        actionRequiredContainer.empty();
-
-        const getInstance = function() {
-          return currentSelect.parents("form").find('.suggest-jira-instance').val();
-        };
-
-        const jiraParameters = {
-          outputSyntax: "plain",
-          instanceId: getInstance(),
-          action: "getAuthenticationActionRequiredUI"
-        };
-
-        $.get(jiraService.getURL('get', $.param($.extend({}, jiraParameters)))).done((data) => {
-          if (data.content) {
-            actionRequiredContainer.append(data.content);
-          }
-        });
       });
     });
   };
@@ -228,6 +208,8 @@ define('xwiki-jira-suggests', ['xwiki-jira-suggestJiraInstance', 'xwiki-jira-sug
 });
 
 require(['jquery', 'xwiki-jira-suggests'], function($) {
+
+  const jiraService = new XWiki.Document(XWiki.Model.resolve(jiraIssueCreationServiceRef, XWiki.EntityType.DOCUMENT));
 
   const fieldTypeHandler = {
     "string": function(field, container, isArrayItem) {
@@ -662,7 +644,7 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
         </div>
       `)
 
-      const inner = $(`
+      var inner = $(`
         <div class="jira-creation-parameter-timetracking-inner" id="innerField-${field.fieldId}">
         </div>
       `)
@@ -905,8 +887,6 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
     const projectKey = $('#projectKey').val().trim();
     const issueType = $('#issueType').val().trim();
 
-    const jiraService = new XWiki.Document(XWiki.Model.resolve(jiraIssueCreationServiceRef, XWiki.EntityType.DOCUMENT));
-
     const jiraFieldsMetadataParameters = {
       outputSyntax: "plain",
       instanceId,
@@ -977,11 +957,6 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
     const formBody = $('<form id="issueCreationForm"></form>');
     formWrapper.append(formBody);
 
-    const requiredActionUIXP = $(`
-        <div id="issueCreationFormAuthenticatorActionRequired">
-        </div>
-    `);
-    formBody.append(requiredActionUIXP);
 
     const projectGroup = $(`
         <div class="form-group jira-creation-parameter mandatory">
@@ -1037,7 +1012,6 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
         const issueType = $('#issueType').val().trim();
 
         if (instanceId && projectKey && issueType) {
-            const jiraService = new XWiki.Document(XWiki.Model.resolve(jiraIssueCreationServiceRef, XWiki.EntityType.DOCUMENT));
 
             const jiraFieldsMetadataParameters = {
               outputSyntax: "plain",
@@ -1161,31 +1135,54 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
     });
   }
 
+  const createIssueCreationFlowInterruption = function(container, content, callback) {
+    $('#issueCreationFormWrapper').remove();
+
+    const formWrapper = $('<div id="issueCreationFormWrapper"></div>');
+    container.append(formWrapper);
+
+    const refreshBtn = $('<p class="btn btn-primary jira-refresh-btn" id="refreshBtn">Refresh</p>')
+
+    const interruption = $(`
+        <div id="issueCreationFormInterruption">
+        </div>
+    `);
+    formWrapper.append(interruption);
+    formWrapper.append(refreshBtn);
+
+    interruption.append(content);
+
+    refreshBtn.on('click', function() {
+      if (refreshBtn.attr("disabled")) {
+        return;
+      }
+      refreshBtn.addClass('loading');
+      refreshBtn.attr('disabled', "disabled");
+      callback();
+    });
+  }
+
   const attachServerPicker = function(event, data) {
     let container = $((data && data.elements) || document);
     $(".macro-editor[data-macroid='jira/xwiki/2.1']").find("#macroParameterTreeNode-instance").find(".macro-parameter[data-id='id']").each(function() {
       const field = $(this).find('.macro-parameter-field');
+      const oldInput = field.find(':input');
 
       field.empty();
       const select = $("<select></select>");
       field.append(select);
 
+      select.attr("name", oldInput.attr("name"));
+      select.attr("id", "instanceId")
+      select.data("property-group", oldInput.data("property-group"));
+      select.append(`<option value="${oldInput.val()}" selected="selected">${oldInput.val()}</option>`);
       select.addClass("suggest-jira-instance");
     });
-
-    container.find(".macro-parameter[data-type='org.xwiki.contrib.jira.config.JIRAServer']").each(function () {
-      $(this).find("select").suggestJiraInstance();
-    });
-  }
+  };
 
   const attachContentPicker = function(event, data) {
     let container = $((data && data.elements) || document);
-
-    console.log("Attaching pickers.");
     $(".macro-editor[data-macroid='jira/xwiki/2.1']").find(".macro-parameter[data-id='$content']").each(function () {
-
-      console.log("Attaching.");
-      console.log($(this));
 
       const field = $(this).find('.macro-parameter-field').addClass("macro-parameter-group");
 
@@ -1204,17 +1201,21 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
           </div>
         </div>
       `
-      field.empty().append(contentNav);
-      field.find(".macro-content-pane").append(oldContent);
+      if ($('#issueCreationFormWrapper').length === 0) {
+        console.log("Attaching.");
+        console.log($(this));
+        field.empty().append(contentNav);
+        field.find(".macro-content-pane").append(oldContent);
+      }
 
       const newTab = field.find('#content-tab-new');
       const listTabMessage = field.find('#content-tab-list-success-messages');
       const textarea = field.find('textarea[name="$content"]')[0];
       console.log(textarea);
       const callback = function(data) {
-        field.find('.nav-tabs a[href="#content-tab-list"]').tab('show');
         listTabMessage.empty();
         if (data) {
+          field.find('.nav-tabs a[href="#content-tab-list"]').tab('show');
           listTabMessage.append(`
             <div class="jira-issue-creation-success-message">
               <p>Created issue: ${data}</p>
@@ -1222,14 +1223,47 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
           `)
           $('.jira-issue-creation-success-message')[0].scrollIntoView();
         }
-        createIssueCreationForm(textarea, newTab, callback);
+
+        const getInstance = function() {
+          return field.parents("form").find('.suggest-jira-instance').val();
+        };
+
+        const jiraLicenceParameters = {
+          outputSyntax: "html",
+          action: "licenceStatus"
+        }
+
+        $.get(jiraService.getURL('get', $.param($.extend({}, jiraLicenceParameters)))).done((data) => {
+          result = $("<div></div>").append(data).find(".errormessage");
+          if (result.length !== 0) {
+            createIssueCreationFlowInterruption(newTab, result, callback);
+          } else {
+            attachServerPicker();
+            $('.suggest-jira-instance').suggestJiraInstance();
+            $('.suggest-jira-instance').on('change', function(event) {
+              attachContentPicker();
+            });
+
+            const jiraActionRequiredParameters = {
+              outputSyntax: "plain",
+              instanceId: getInstance(),
+              action: "getAuthenticationActionRequiredUI"
+            };
+
+            $.get(jiraService.getURL('get', $.param($.extend({}, jiraActionRequiredParameters)))).done((data) => {
+              if (data.message) {
+                createIssueCreationFlowInterruption(newTab, data.message, callback);
+              } else {
+                createIssueCreationForm(textarea, newTab, callback);
+              }
+            });
+          }
+        });
       };
       callback()
     });
-  }
+  };
 
-  $(document).on('xwiki:dom:updated', attachServerPicker);
   $(document).on('xwiki:dom:updated', attachContentPicker);
-  attachServerPicker();
   attachContentPicker();
 });
