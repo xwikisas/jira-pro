@@ -33,7 +33,7 @@
     <xwiki.extension.name>JIRA issue creation</xwiki.extension.name>
     <xwiki.extension.category>other</xwiki.extension.category>
     <xwiki.extension.licensing.publicDocuments>
-      JiraCode.JiraIssueCreationService
+      XWiki.JIRAPro.IssueCreate.JiraIssueCreationService
     </xwiki.extension.licensing.publicDocuments>
   </properties>
   <dependencies>
