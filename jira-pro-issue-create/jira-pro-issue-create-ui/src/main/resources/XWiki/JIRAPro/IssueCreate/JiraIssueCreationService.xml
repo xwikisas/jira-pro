@@ -52,7 +52,7 @@
 #end
 #macro (getAuthenticationActionRequiredUI)
   #set ($macro.authenticator = $services.component.getInstance('org.xwiki.contrib.jira.config.JIRAConfiguration').jIRAServers[$request.instanceId].jiraAuthenticator.get())
-  #if ($macro.authenticator.class.name == 'com.xwiki.jirapro.oauth.internal.JIRAOAuthAuthenticator')
+  #if ($macro.authenticator.class.name == 'com.xwiki.jirapro.oauth.internal.JIRAOAuthAuthenticator' &amp;&amp; !$macro.authenticator.authenticatingRequest)
     #set ($jsonData = $jsontool.serialize({"message": $services.rendering.render($macro.authenticator.getWarningMacroBlock(true, false, $doc.URL), "html/5.0")}))
   #end
 #end
