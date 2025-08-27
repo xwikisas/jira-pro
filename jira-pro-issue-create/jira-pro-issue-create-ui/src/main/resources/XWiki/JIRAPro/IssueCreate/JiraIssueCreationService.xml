@@ -84,7 +84,7 @@
 #end
 {{/velocity}}
 {{velocity wiki="false"}}
-#if (!$services.licensing.licensor.hasLicensureForEntity($services.model.resolveDocument('XWiki.JIRAPro.IssueCreate.WebHome')))
+#if ($request.action != 'licenceStatus' &amp;&amp; !$services.licensing.licensor.hasLicensureForEntity($services.model.resolveDocument('XWiki.JIRAPro.IssueCreate.WebHome')))
   ## Avoid to execute any thing else if licence is not valid
   #jsonResponse({"error": "Invalid licence"})
   #stop
