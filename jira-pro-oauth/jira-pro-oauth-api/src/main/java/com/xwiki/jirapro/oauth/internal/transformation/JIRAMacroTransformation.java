@@ -55,7 +55,7 @@ public class JIRAMacroTransformation<P> implements org.xwiki.contrib.jira.macro.
     public List<Block> transform(List<Block> blocks, P parameters, MacroTransformationContext context,
         JIRAServer jiraServer, String macroName)
     {
-        XWikiContext xwikiContext = contextProvider.get();
+        XWikiContext xcontext = contextProvider.get();
         if (jiraServer.getJiraAuthenticator().isEmpty()
             || !(jiraServer.getJiraAuthenticator().get() instanceof JIRAOAuthAuthenticator))
         {
@@ -63,7 +63,7 @@ public class JIRAMacroTransformation<P> implements org.xwiki.contrib.jira.macro.
         }
 
         if (!licensor.hasLicensure(
-            new DocumentReference(xwikiContext.getWikiId(), List.of("XWiki", "JIRAPro", "OAuth"), "WebHome")))
+            new DocumentReference(xcontext.getWikiId(), List.of("XWiki", "JIRAPro", "OAuth"), "WebHome")))
         {
             return List.of(new MacroBlock(
                 "missingLicenseMessage",
@@ -79,11 +79,11 @@ public class JIRAMacroTransformation<P> implements org.xwiki.contrib.jira.macro.
         }
         if (authenticator.isRequiringAuthentication()) {
             return List.of(authenticator.getWarningMacroBlock(true, context.isInline(),
-                xwikiContext.getURL().toString()));
+                xcontext.getURL().toString()));
         } else {
             List<Block> result = new ArrayList<>(blocks);
             result.add(authenticator.getWarningMacroBlock(false, context.isInline(),
-                xwikiContext.getURL().toString()));
+                xcontext.getURL().toString()));
             return result;
         }
     }
