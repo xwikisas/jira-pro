@@ -20,7 +20,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.5" reference="XWiki.JIRAPro.IssueCreate.JiraIssueCreationService" locale="">
+<xwikidoc version="1.6" reference="XWiki.JIRAPro.IssueCreate.JiraIssueCreationService" locale="">
   <web>XWiki.JIRAPro.IssueCreate</web>
   <name>JiraIssueCreationService</name>
   <language/>
@@ -38,6 +38,7 @@
   <hidden>true</hidden>
   <content>{{velocity output="false"}}
 ## Request action parameter:
+##   * licenceStatus
 ##   * suggestInstance
 ##   * getAuthenticationActionRequiredUI
 ##   * suggestProject
@@ -52,7 +53,7 @@
 #macro (getAuthenticationActionRequiredUI)
   #set ($macro.authenticator = $services.component.getInstance('org.xwiki.contrib.jira.config.JIRAConfiguration').jIRAServers[$request.instanceId].jiraAuthenticator.get())
   #if ($macro.authenticator.class.name == 'com.xwiki.jirapro.oauth.internal.JIRAOAuthAuthenticator')
-    #set ($jsonData = $jsontool.serialize({"message": $services.rendering.render($macro.authenticator.getWarningMacroBlock(true, false, $doc.URL), $doc.syntax)}))
+    #set ($jsonData = $jsontool.serialize({"message": $services.rendering.render($macro.authenticator.getWarningMacroBlock(true, false, $doc.URL), "html/5.0")}))
   #end
 #end
 #macro (suggestProject $text)
@@ -74,12 +75,16 @@
   #set ($jsonData = $services.jiraIssueCreation.createIssue($request.instanceId, $inputData))
 #end
 {{/velocity}}
-{{velocity wiki="false"}}
-#set ($licenceDocRef = $services.model.resolveDocument('XWiki.JIRAPro.IssueCreate.WebHome'))
-#if ($request.action == 'licenceStatus' &amp;&amp; !$services.licensing.licensor.hasLicensureForEntity($licenceDocRef))
-  {{missingLicenseMessage extensionName="com.xwiki.jirapro.issuecreate.extension.name"/}}
+{{velocity}}
+#if ($request.action == 'licenceStatus' &amp;&amp; !$services.licensing.licensor.hasLicensureForEntity($services.model.resolveDocument('XWiki.JIRAPro.IssueCreate.WebHome')))
+
+
+
+{{missingLicenseMessage extensionName="com.xwiki.jirapro.issuecreate.extension.name"/}}
 #end
-#if (!$services.licensing.licensor.hasLicensureForEntity($licenceDocRef))
+{{/velocity}}
+{{velocity wiki="false"}}
+#if (!$services.licensing.licensor.hasLicensureForEntity($services.model.resolveDocument('XWiki.JIRAPro.IssueCreate.WebHome')))
   ## Avoid to execute any thing else if licence is not valid
   #jsonResponse({"error": "Invalid licence"})
   #stop
