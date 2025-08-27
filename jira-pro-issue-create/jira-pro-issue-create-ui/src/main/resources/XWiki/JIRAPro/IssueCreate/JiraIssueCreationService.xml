@@ -75,11 +75,13 @@
 #end
 {{/velocity}}
 {{velocity wiki="false"}}
-#if ($request.action == 'licenceStatus' &amp;&amp; !$services.promacrolicensing.hasLicensureForEntity($doc.documentReference))
+#set ($licenceDocRef = $services.model.resolveDocument('XWiki.JIRAPro.IssueCreate.WebHome'))
+#if ($request.action == 'licenceStatus' &amp;&amp; !$services.licensing.licensor.hasLicensureForEntity($licenceDocRef))
   {{missingLicenseMessage extensionName="com.xwiki.jirapro.issuecreate.extension.name"/}}
 #end
-#if (!$services.promacrolicensing.hasLicensureForEntity($doc.documentReference))
+#if (!$services.licensing.licensor.hasLicensureForEntity($licenceDocRef))
   ## Avoid to execute any thing else if licence is not valid
+  #jsonResponse({"error": "Invalid licence"})
   #stop
 #end
 #set ($text = "")

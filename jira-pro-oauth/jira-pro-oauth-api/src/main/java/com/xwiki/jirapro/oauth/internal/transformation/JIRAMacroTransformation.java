@@ -26,10 +26,8 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import org.slf4j.Logger;
 import org.xwiki.contrib.jira.config.JIRAServer;
-import org.xwiki.extension.ExtensionId;
-import org.xwiki.localization.ContextualLocalizationManager;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.rendering.block.Block;
 import org.xwiki.rendering.block.MacroBlock;
 import org.xwiki.rendering.transformation.MacroTransformationContext;
@@ -47,20 +45,8 @@ import com.xwiki.licensing.Licensor;
  */
 public class JIRAMacroTransformation<P> implements org.xwiki.contrib.jira.macro.JIRAMacroTransformation<P>
 {
-    private static final ExtensionId EXT_ID = new ExtensionId("com.xwiki.jirapro:jira-pro-oauth-ui");
-
-    private static final String BLOCK_PARAM_CLASS = "class";
-
-    private static final String BLOCK_PARAM_CLASS_VALUE_WARNINGMESSAGE = "box warningmessage";
-
-    @Inject
-    private Logger logger;
-
     @Inject
     private Provider<XWikiContext> contextProvider;
-
-    @Inject
-    private ContextualLocalizationManager localization;
 
     @Inject
     private Licensor licensor;
@@ -69,13 +55,16 @@ public class JIRAMacroTransformation<P> implements org.xwiki.contrib.jira.macro.
     public List<Block> transform(List<Block> blocks, P parameters, MacroTransformationContext context,
         JIRAServer jiraServer, String macroName)
     {
-        if (jiraServer.getJiraAuthenticator().isEmpty() || !(jiraServer.getJiraAuthenticator()
-            .get() instanceof JIRAOAuthAuthenticator))
+        XWikiContext xwikiContext = contextProvider.get();
+        if (jiraServer.getJiraAuthenticator().isEmpty()
+            || !(jiraServer.getJiraAuthenticator().get() instanceof JIRAOAuthAuthenticator))
         {
             return blocks;
         }
 
-        if (!licensor.hasLicensure(EXT_ID)) {
+        if (!licensor.hasLicensure(
+            new DocumentReference(xwikiContext.getWikiId(), List.of("XWiki", "JIRAPro", "OAuth"), "WebHome")))
+        {
             return List.of(new MacroBlock(
                 "missingLicenseMessage",
                 Map.of("extensionName", "com.xwiki.jirapro.oauth.extension.name"),
@@ -90,11 +79,11 @@ public class JIRAMacroTransformation<P> implements org.xwiki.contrib.jira.macro.
         }
         if (authenticator.isRequiringAuthentication()) {
             return List.of(authenticator.getWarningMacroBlock(true, context.isInline(),
-                contextProvider.get().getURL().toString()));
+                xwikiContext.getURL().toString()));
         } else {
             List<Block> result = new ArrayList<>(blocks);
             result.add(authenticator.getWarningMacroBlock(false, context.isInline(),
-                contextProvider.get().getURL().toString()));
+                xwikiContext.getURL().toString()));
             return result;
         }
     }

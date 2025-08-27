@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 
 import org.apache.hc.client5.http.ContextBuilder;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequest;
@@ -43,6 +44,7 @@ import org.xwiki.contrib.oidc.auth.store.OIDCClientConfiguration;
 import org.xwiki.contrib.oidc.auth.store.OIDCClientConfigurationStore;
 import org.xwiki.job.Job;
 import org.xwiki.localization.ContextualLocalizationManager;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.rendering.block.Block;
 import org.xwiki.rendering.block.FormatBlock;
 import org.xwiki.rendering.block.GroupBlock;
@@ -54,6 +56,8 @@ import org.xwiki.rendering.listener.reference.ResourceReference;
 import org.xwiki.rendering.listener.reference.ResourceType;
 
 import com.atlassian.jira.rest.client.api.AuthenticationHandler;
+import com.xpn.xwiki.XWikiContext;
+import com.xwiki.licensing.Licensor;
 
 /**
  * JIRA Rest Client provider with OAuth configuration.
@@ -80,6 +84,9 @@ public class JIRAOAuthAuthenticator implements JIRAAuthenticator
     private boolean isRequiringAuthentication;
 
     @Inject
+    private Provider<XWikiContext> contextProvider;
+
+    @Inject
     private OIDCClientConfigurationStore clientConfigurationStore;
 
     @Inject
@@ -93,6 +100,9 @@ public class JIRAOAuthAuthenticator implements JIRAAuthenticator
 
     @Inject
     private ContextualLocalizationManager localization;
+
+    @Inject
+    private Licensor licensor;
 
     /**
      * Configure the authenticator with the parameter set into the configuration.
@@ -137,6 +147,11 @@ public class JIRAOAuthAuthenticator implements JIRAAuthenticator
      */
     public Optional<String> getOAuthToken()
     {
+        if (!licensor.hasLicensure(
+            new DocumentReference(contextProvider.get().getWikiId(), List.of("XWiki", "JIRAPro", "OAuth"), "WebHome")))
+        {
+            return Optional.empty();
+        }
         try {
             // Make sure that the token is up to date
             OIDCClientConfiguration configuration =
