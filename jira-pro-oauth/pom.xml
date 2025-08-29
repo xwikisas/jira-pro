@@ -34,4 +34,5 @@
     <module>jira-pro-oauth-api</module>
     <module>jira-pro-oauth-ui</module>
   </modules>
+
 </project>
