@@ -79,6 +79,8 @@ public class JIRAOAuthAuthenticator implements JIRAAuthenticator
 
     private static final String BLOCK_PARAM_CLASS_VALUE_WARNINGMESSAGE = "box warningmessage";
 
+    private static final String QUERY_STRING = "queryString";
+
     private String configurationName;
 
     private boolean isRequiringAuthentication;
@@ -214,19 +216,33 @@ public class JIRAOAuthAuthenticator implements JIRAAuthenticator
         }
         String linkTranslationKey;
         String descriptionTranslationKey;
+        boolean isUserLoggedIn = contextProvider.get().getUserReference() != null;
         if (mustBeAuthenticated) {
-            linkTranslationKey = "com.xwiki.jirapro.oauth.mustbeauthenticated.description";
-            descriptionTranslationKey = "com.xwiki.jirapro.oauth.mustbeauthenticated.link";
+            descriptionTranslationKey =
+                isUserLoggedIn ? "com.xwiki.jirapro.oauth.mustbeauthenticated.jira.description"
+                    : "com.xwiki.jirapro.oauth.mustbeauthenticated.xwiki.description";
+            linkTranslationKey =
+                isUserLoggedIn ? "com.xwiki.jirapro.oauth.mustbeauthenticated.jira.link"
+                    : "com.xwiki.jirapro.oauth.mustbeauthenticated.xwiki.link";
         } else {
-            linkTranslationKey = "com.xwiki.jirapro.oauth.mightneedtoauthenticate.description";
-            descriptionTranslationKey = "com.xwiki.jirapro.oauth.mightneedtoauthenticate.link";
+            descriptionTranslationKey =
+                isUserLoggedIn ? "com.xwiki.jirapro.oauth.mightneedtoauthenticate.jira.description"
+                    : "com.xwiki.jirapro.oauth.mightneedtoauthenticate.xwiki.description";
+            linkTranslationKey =
+                isUserLoggedIn ? "com.xwiki.jirapro.oauth.mightneedtoauthenticate.jira.link"
+                    : "com.xwiki.jirapro.oauth.mightneedtoauthenticate.xwiki.link";
         }
         String configId = getConfigurationName();
-        ResourceReference reference = new ResourceReference("XWiki.JIRAPro.OAuth.JiraAuthorize", ResourceType.DOCUMENT);
-        reference.setParameter("queryString",
-            "configId=" + URLEncoder.encode(configId, StandardCharsets.UTF_8)
-                + "&redirectUrl=" + URLEncoder.encode(redirectUrl,
-                StandardCharsets.UTF_8));
+        ResourceReference reference = isUserLoggedIn
+            ? new ResourceReference("XWiki.JIRAPro.OAuth.JiraAuthorize", ResourceType.DOCUMENT)
+            : new ResourceReference("/xwiki/bin/login/XWiki/XWikiLogin?xredirect="
+            + URLEncoder.encode(redirectUrl, StandardCharsets.UTF_8), ResourceType.PATH);
+        if (isUserLoggedIn) {
+            reference.setParameter(QUERY_STRING,
+                "configId=" + URLEncoder.encode(configId, StandardCharsets.UTF_8)
+                    + "&redirectUrl=" + URLEncoder.encode(redirectUrl,
+                    StandardCharsets.UTF_8));
+        }
         LinkBlock link = new LinkBlock(
             localization.getTranslation(linkTranslationKey).render().getChildren(),
             reference,

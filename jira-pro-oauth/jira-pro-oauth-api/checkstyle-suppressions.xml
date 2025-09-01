@@ -5,6 +5,6 @@
         "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
 
 <suppressions>
-  <suppress checks="ClassFanOutComplexity"
+  <suppress checks="ClassFanOutComplexity|CyclomaticComplexity"
             files="com/xwiki/jirapro/oauth/internal/JIRAOAuthAuthenticator\.java"/>
 </suppressions>
