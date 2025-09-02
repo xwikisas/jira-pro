@@ -1069,7 +1069,7 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
                 dataType: "json",
                 success: (data) => {
                 createIssueBtn.removeAttr('disabled');
-                console.log(data)
+
                 if (data.key) {
                   textarea.value = data.key + "\n" + textarea.value;
                   // new XWiki.widgets.Notification('Created issue: ' + data.key);
@@ -1103,7 +1103,7 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
                 },
                 error: function(xhr, status, error) {
                     createIssueBtn.removeAttr('disabled');
-                    console.log(xhr.responseText);
+                    console.error(xhr.responseText);
                     // new XWiki.widgets.Notification('Failed to create issue.', "error")
                     createIssueError("Failed to create issue.", true);
                 }
@@ -1192,7 +1192,7 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
 
       const oldContent = field.children().clone(true)
       const contentNav = `
-        <ul class="nav nav-tabs">
+        <ul class="nav nav-tabs" id="jiraContentNav">
           <li role="presentation" class="active"><a href="#content-tab-list" role="tab" data-toggle="tab">Issues list</a></li>
           <li role="presentation" ><a href="#content-tab-new" role="tab" data-toggle="tab">New issue</a></li>
         </ul>
@@ -1205,9 +1205,7 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
           </div>
         </div>
       `
-      if ($('#issueCreationFormWrapper').length === 0) {
-        console.log("Attaching.");
-        console.log($(this));
+      if ($('#jiraContentNav').length === 0) {
         field.empty().append(contentNav);
         field.find(".macro-content-pane").append(oldContent);
       }
@@ -1215,7 +1213,7 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
       const newTab = field.find('#content-tab-new');
       const listTabMessage = field.find('#content-tab-list-success-messages');
       const textarea = field.find('textarea[name="$content"]')[0];
-      console.log(textarea);
+
       const callback = function(data) {
         listTabMessage.empty();
         if (data) {
@@ -1247,6 +1245,10 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
             $('.suggest-jira-instance').on('change', function(event) {
               attachContentPicker();
             });
+
+            if (getInstance().blank()) {
+              return createIssueCreationFlowInterruption(newTab, $('<div class="box warningmessage"><p>Please select an instance.</p></div>'), callback);
+            }
 
             const jiraActionRequiredParameters = {
               outputSyntax: "plain",
