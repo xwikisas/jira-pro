@@ -1175,7 +1175,11 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
       select.attr("name", oldInput.attr("name"));
       select.attr("id", "instanceId")
       select.data("property-group", oldInput.data("property-group"));
-      select.append(`<option value="${oldInput.val()}" selected="selected">${oldInput.val()}</option>`);
+
+      const option = $('<option selected="selected"></option>');
+      option.val(oldInput.val());
+      option.text(oldInput.val());
+      select.append(option);
       select.addClass("suggest-jira-instance");
     });
   };
