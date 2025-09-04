@@ -45,8 +45,8 @@
   </scm>
   <properties>
     <licensing.version>1.29</licensing.version>
-    <jira.version>11.0.0</jira.version>
-    <oidc.version>2.19.2</oidc.version>
+    <jira.version>11.1.0</jira.version>
+    <oidc.version>2.19.3</oidc.version>
     <xwiki.extension.category>application</xwiki.extension.category>
   </properties>
   <modules>
@@ -63,7 +63,7 @@
         theoretically defining the dependency management in OIDC should be enough, but it seems not it's why it's
         declared here
         -->
-        <version>10.4.1</version>
+        <version>10.4.2</version>
       </dependency>
       <dependency>
         <groupId>org.xwiki.commons</groupId>
