@@ -154,6 +154,9 @@ public class JIRAOAuthAuthenticator implements JIRAAuthenticator
         {
             return Optional.empty();
         }
+        if (contextProvider.get().getUserReference() == null) {
+            return Optional.empty();
+        }
         try {
             // Make sure that the token is up to date
             OIDCClientConfiguration configuration =
@@ -175,7 +178,7 @@ public class JIRAOAuthAuthenticator implements JIRAAuthenticator
                 return Optional.empty();
             }
         } catch (Exception e) {
-            logger.error("Can't OAuth token", e);
+            logger.error("Can't get OAuth token", e);
             return Optional.empty();
         }
     }
