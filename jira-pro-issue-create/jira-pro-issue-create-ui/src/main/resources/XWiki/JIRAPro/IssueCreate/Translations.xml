@@ -36,7 +36,28 @@
   <minorEdit>false</minorEdit>
   <syntaxId>plain/1.0</syntaxId>
   <hidden>true</hidden>
-  <content>com.xwiki.jirapro.issuecreate.extension.name=JIRA Issue creation</content>
+  <content>com.xwiki.jirapro.issuecreate.extension.name=JIRA Issue creation
+com.xwiki.jirapro.issuecreate.form.fields.project.name=Project
+com.xwiki.jirapro.issuecreate.form.fields.project.hint=Project Project
+com.xwiki.jirapro.issuecreate.form.fields.version.status.isReleased=Released
+com.xwiki.jirapro.issuecreate.form.fields.version.status.isNotReleased=Unreleased
+com.xwiki.jirapro.issuecreate.form.fields.timetracking.fields.originalEstimate.name=Original Estimate
+com.xwiki.jirapro.issuecreate.form.fields.timetracking.fields.remainingEstimate.name=Remaining Estimate
+com.xwiki.jirapro.issuecreate.form.fields.timetracking.fields.timeSpent.name=Time Spent
+com.xwiki.jirapro.issuecreate.form.fields.errorMessages.isEmpty=The required field is empty.
+com.xwiki.jirapro.issuecreate.form.fields.errorMessages.NaN="{0}" is not a number.
+com.xwiki.jirapro.issuecreate.form.fields.project.name=Project
+com.xwiki.jirapro.issuecreate.form.fields.project.hint=Select the project
+com.xwiki.jirapro.issuecreate.form.fields.issueType.name=Issue Type
+com.xwiki.jirapro.issuecreate.form.fields.issueType.hint=Select the issue type
+com.xwiki.jirapro.issuecreate.form.create=Create Issue
+com.xwiki.jirapro.issuecreate.form.result.failed.generic=Failed to create issue.
+com.xwiki.jirapro.issuecreate.form.result.failed.empty=All fields are required.
+com.xwiki.jirapro.issuecreate.form.interruption.refresh=Refresh
+com.xwiki.jirapro.issuecreate.form.nav.content.list.title=Issues List
+com.xwiki.jirapro.issuecreate.form.nav.content.jql.title=Issues JQL
+com.xwiki.jirapro.issuecreate.form.nav.creation.title=Issue Creation
+com.xwiki.jirapro.issuecreate.form.interruption.instance.empty=Please select an instance id.</content>
   <object>
     <name>XWiki.JIRAPro.IssueCreate.Translations</name>
     <number>0</number>

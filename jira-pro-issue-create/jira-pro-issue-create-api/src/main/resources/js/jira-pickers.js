@@ -26,6 +26,32 @@ require.config({
   }
 });
 
+define('xwiki-jira-issue-creation-translation-keys', {
+  prefix: 'com.xwiki.jirapro.issuecreate.',
+  keys: [
+    "form.fields.version.status.isReleased",
+    "form.fields.version.status.isNotReleased",
+    "form.fields.timetracking.fields.originalEstimate.name",
+    "form.fields.timetracking.fields.remainingEstimate.name",
+    "form.fields.timetracking.fields.timeSpent.name",
+    "form.fields.errorMessages.isEmpty",
+    "form.fields.errorMessages.NaN",
+    "form.fields.project.name",
+    "form.fields.project.hint",
+    "form.fields.issueType.name",
+    "form.fields.issueType.hint",
+    "form.create",
+    "form.result.failed.generic",
+    "form.result.failed.empty",
+    "form.interruption.refresh",
+    "form.nav.content.list.title",
+    "form.nav.content.jql.title",
+    "form.nav.creation.title",
+    "form.interruption.instance.empty",
+  ]
+});
+
+
 define('xwiki-jira-suggestJiraInstance', ['jquery', 'xwiki-selectize'], function($) {
   const jiraService = new XWiki.Document(XWiki.Model.resolve(jiraIssueCreationServiceRef, XWiki.EntityType.DOCUMENT));
   const jiraParameters = {
@@ -207,7 +233,7 @@ define('xwiki-jira-suggests', ['xwiki-jira-suggestJiraInstance', 'xwiki-jira-sug
 
 });
 
-require(['jquery', 'xwiki-jira-suggests'], function($) {
+require(['jquery', 'xwiki-l10n!xwiki-jira-issue-creation-translation-keys', 'xwiki-jira-suggests'], function($, l10n) {
 
   const jiraService = new XWiki.Document(XWiki.Model.resolve(jiraIssueCreationServiceRef, XWiki.EntityType.DOCUMENT));
 
@@ -367,7 +393,7 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
         return {
           label: value.name,
           value: value.id,
-          hint: value.released ? "Released" : "Unreleased"
+          hint: value.released ? l10n["form.fields.version.status.isReleased"] : l10n["form.fields.version.status.isNotReleased"]
         }
       }), {
         allowEmptyOption: field.required,
@@ -657,7 +683,7 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
         container.append(formGroup);
       }
 
-      [{"attr":"originalEstimate", "name":"Original Estimate"}, {"attr":"remainingEstimate", "name":"Remaining Estimate"}, {"attr": "timeSpent", "name": "Time Spent"}].forEach(fieldDetails => {
+      [{"attr":"originalEstimate", "name":l10n["form.fields.timetracking.fields.originalEstimate.name"]}, {"attr":"remainingEstimate", "name":l10n["form.fields.timetracking.fields.remainingEstimate.name"]}, {"attr": "timeSpent", "name": l10n["form.fields.timetracking.fields.timeSpent.name"]}].forEach(fieldDetails => {
         // Deepcopy field and set new fieldId and schema type.
         const itemField = JSON.parse(JSON.stringify(field))
         itemField.schema.type = "string";
@@ -678,6 +704,16 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
     }
   };
 
+  const addFieldErrorMessage = function(container, message) {
+    const errorWrapper = $(`
+          <div class="jira-issue-creation-error-message">
+          </div>`)
+    const errorMessage = $('<p></p>')
+    errorMessage.text("* " + message);
+    errorWrapper.append(errorMessage);
+    container.prepend(errorWrapper);
+  };
+
   const getAndCheckInnerFieldVal = function (field, isArrayItem) {
     const innerField = $(`#innerField-${field.fieldId}`)
     let val = undefined
@@ -688,11 +724,7 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
       // new XWiki.widgets.Notification(`Field ${field.name} is required.`, "error")
       const fieldWrapperNode = $(`#innerField-${field.fieldId}-wrapper`);
 
-      fieldWrapperNode.prepend($(`
-        <div class="jira-issue-creation-error-message">
-          <p>* The required field is empty.</p>
-        </div>
-      `))
+      addFieldErrorMessage(fieldWrapperNode, l10n["form.fields.errorMessages.isEmpty"])
 
       $(".jira-issue-creation-error-message")[0].scrollIntoView();
       throw new Error("Missing required field.")
@@ -718,11 +750,7 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
         if (field.required) {
           const fieldWrapperNode = $(`#innerField-${field.fieldId}-wrapper`);
 
-          fieldWrapperNode.prepend($(`
-            <div class="jira-issue-creation-error-message">
-              <p>* \"${textValue}\" is not a number.</p>
-            </div>
-          `))
+          addFieldErrorMessage(fieldWrapperNode, l10n.get("form.fields.errorMessages.NaN", textValue));
 
           $(".jira-issue-creation-error-message")[0].scrollIntoView();
 
@@ -821,11 +849,7 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
         // new XWiki.widgets.Notification(`Field ${field.name} is required.`, "error");
         const fieldWrapperNode = $(`#innerField-${field.fieldId}-wrapper`);
 
-        fieldWrapperNode.prepend($(`
-          <div class="jira-issue-creation-error-message">
-            <p>* The required field is empty.</p>
-          </div>
-        `))
+        addFieldErrorMessage(fieldWrapperNode, l10n["form.fields.errorMessages.isEmpty"]);
 
         $(".jira-issue-creation-error-message")[0].scrollIntoView();
         throw new Error("Missing required field.")
@@ -837,7 +861,7 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
 
       let empty = true;
 
-      [{"attr":"originalEstimate", "name":"Original Estimate"}, {"attr":"remainingEstimate", "name":"Remaining Estimate"}, {"attr": "timeSpent", "name": "Time Spent"}].forEach(fieldDetails => {
+      [{"attr":"originalEstimate", "name":l10n["form.fields.timetracking.fields.originalEstimate.name"]}, {"attr":"remainingEstimate", "name":l10n["form.fields.timetracking.fields.remainingEstimate.name"]}, {"attr": "timeSpent", "name": l10n["form.fields.timetracking.fields.timeSpent.name"]}].forEach(fieldDetails => {
         // Deepcopy field and set new fieldId and schema type.
         const itemField = JSON.parse(JSON.stringify(field))
         itemField.schema.type = "string";
@@ -865,11 +889,7 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
         // new XWiki.widgets.Notification(`Field ${field.name} is required.`, "error")
         const fieldWrapperNode = $(`#innerField-${field.fieldId}-wrapper`);
 
-        fieldWrapperNode.prepend($(`
-          <div class="jira-issue-creation-error-message">
-            <p>* The required field is empty.</p>
-          </div>
-        `))
+        addFieldErrorMessage(fieldWrapperNode, l10n["form.fields.errorMessages.isEmpty"]);
 
         $(".jira-issue-creation-error-message")[0].scrollIntoView();
         throw new Error("Missing required field.")
@@ -961,25 +981,29 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
     const projectGroup = $(`
         <div class="form-group jira-creation-parameter mandatory">
           <div class="jira-creation-parameter-name">
-            <label for="projectKey">Project</label>
+            <label for="projectKey"></label>
           </div>
           <select class="suggest-jira-project" id="projectKey">
-            <option value="">Select the project</option>
+            <option value=""></option>
           </select>
         </div>
     `)
+    projectGroup.find('label').text(l10n["form.fields.project.name"])
+    projectGroup.find('option').text(l10n["form.fields.project.hint"])
     formBody.append(projectGroup);
 
     const issueTypeGroup = $(`
         <div class="form-group jira-creation-parameter mandatory">
           <div class="jira-creation-parameter-name">
-            <label for="issueType">Issue Type</label>
+            <label for="issueType"></label>
           </div>
           <select class="suggest-jira-issueType" id="issueType">
-            <option value="">Select the issue type</option>
+            <option value=""></option>
           </select>
         </div>
     `)
+    issueTypeGroup.find('label').text(l10n["form.fields.issueType.name"])
+    issueTypeGroup.find('option').text(l10n["form.fields.issueType.hint"])
     formBody.append(issueTypeGroup);
 
     const innerForm = $(`
@@ -993,9 +1017,9 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
     const formFooter = $(`<div></div>`);
     formWrapper.append(formFooter);
 
-    const createIssueBtn = $('<p class="btn btn-primary jira-create-btn" id="createIssueBtn">Create Issue</p>')
+    const createIssueBtn = $('<p class="btn btn-primary jira-create-btn" id="createIssueBtn"></p>')
+    createIssueBtn.text(l10n["form.create"]);
     formFooter.append(createIssueBtn);
-    // const createIssueBtn = $('#createIssueBtn');
 
     // Handle create button click
     createIssueBtn.on('click', function () {
@@ -1076,7 +1100,7 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
                   callback(data.key);
                 } else {
                   // new XWiki.widgets.Notification('Failed to create issue.', "error")
-                  createIssueError("Failed to create issue.", true);
+                  createIssueError(l10n["form.result.failed.generic"], true);
                   if (data.errors) {
                     for (errorsFieldId in data.errors) {
 
@@ -1105,13 +1129,13 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
                     createIssueBtn.removeAttr('disabled');
                     console.error(xhr.responseText);
                     // new XWiki.widgets.Notification('Failed to create issue.', "error")
-                    createIssueError("Failed to create issue.", true);
+                    createIssueError(l10n["form.result.failed.generic"], true);
                 }
               });
             });
         } else {
             // new XWiki.widgets.Notification(`All fields are required.`, "error");
-            createIssueError("All fields are required.")
+            createIssueError(l10n["form.result.failed.empty"])
             createIssueBtn.removeAttr('disabled');
         }
     });
@@ -1141,7 +1165,8 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
     const formWrapper = $('<div id="issueCreationFormWrapper"></div>');
     container.append(formWrapper);
 
-    const refreshBtn = $('<p class="btn btn-primary jira-refresh-btn" id="refreshBtn">Refresh</p>')
+    const refreshBtn = $('<p class="btn btn-primary jira-refresh-btn" id="refreshBtn"></p>')
+    refreshBtn.text(l10n["form.interruption.refresh"])
 
     const interruption = $(`
         <div id="issueCreationFormInterruption">
@@ -1191,11 +1216,16 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
       const field = $(this).find('.macro-parameter-field').addClass("macro-parameter-group");
 
       const oldContent = field.children().clone(true)
-      const contentNav = `
+      const contentNav = $(`
         <ul class="nav nav-tabs" id="jiraContentNav">
-          <li role="presentation" class="active"><a href="#content-tab-list" role="tab" data-toggle="tab">Issues list</a></li>
-          <li role="presentation" ><a href="#content-tab-new" role="tab" data-toggle="tab">New issue</a></li>
-        </ul>
+        </ul>`);
+      const listNav = $('<li role="presentation" class="active"><a href="#content-tab-list" role="tab" data-toggle="tab"></a></li>');
+      listNav.find("a").text(l10n["form.nav.content.list.title"]);
+      const creationNav = $('<li role="presentation" ><a href="#content-tab-new" role="tab" data-toggle="tab"></a></li>');
+      creationNav.find("a").text(l10n["form.nav.creation.title"]);
+      contentNav.append(listNav);
+      contentNav.append(creationNav);
+      const newContent = $(`
         <div class="tab-content">
           <div id="content-tab-list" role="tabpanel" class="tab-pane active macro-content-pane">
             <div id="content-tab-list-success-messages">
@@ -1204,9 +1234,10 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
           <div id="content-tab-new" role="tabpanel" class="tab-pane">
           </div>
         </div>
-      `
+      `)// FIXME: l10n: form.nav.content.list.title, form.nav.content.jql.title, form.nav.creation.title
       if ($('#jiraContentNav').length === 0) {
         field.empty().append(contentNav);
+        field.append(newContent);
         field.find(".macro-content-pane").append(oldContent);
       }
 
@@ -1247,7 +1278,9 @@ require(['jquery', 'xwiki-jira-suggests'], function($) {
             });
 
             if (getInstance().blank()) {
-              return createIssueCreationFlowInterruption(newTab, $('<div class="box warningmessage"><p>Please select an instance.</p></div>'), callback);
+              const instanceWarning = $('<div class="box warningmessage"><p>Please select an instance.</p></div>');
+              instanceWarning.find("p").text(l10n["form.interruption.instance.empty"]);
+              return createIssueCreationFlowInterruption(newTab, instanceWarning, callback);
             }
 
             const jiraActionRequiredParameters = {
