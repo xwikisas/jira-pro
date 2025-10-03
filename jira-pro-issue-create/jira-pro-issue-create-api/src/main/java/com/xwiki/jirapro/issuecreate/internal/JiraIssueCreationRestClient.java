@@ -239,11 +239,19 @@ public class JiraIssueCreationRestClient
             if (response.has(TOTAL)) {
                 total = response.get(TOTAL).asInt();
             }
-            isLast = response.get(IS_LAST).asBoolean();
+            if (response.has(IS_LAST)) {
+                isLast = response.get(IS_LAST).asBoolean();
+            } else {
+                throw new JiraIssueCreationException("Expected a paginated response.");
+            }
 
-            response.get(VALUES).forEach(entry -> {
-                entries.add(entry);
-            });
+            if (response.has(VALUES)) {
+                response.get(VALUES).forEach(entry -> {
+                    entries.add(entry);
+                });
+            } else {
+                throw new JiraIssueCreationException("Expected a paginated response.");
+            }
         }
 
         return asJSON(Map.of(START_AT, 0, MAX_RESULTS, entries.size(), TOTAL, total, IS_LAST, isLast, VALUES, entries));

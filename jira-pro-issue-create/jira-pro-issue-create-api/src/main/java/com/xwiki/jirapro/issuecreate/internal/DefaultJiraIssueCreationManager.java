@@ -119,7 +119,6 @@ public class DefaultJiraIssueCreationManager implements JiraIssueCreationManager
     }
 
     /**
-     *
      * {@inheritDoc}
      *
      * @see com.xwiki.bmc.macros.jira.internal.JiraIssueCreationManager#getAuthenticatorID(java.lang.String)
@@ -140,8 +139,7 @@ public class DefaultJiraIssueCreationManager implements JiraIssueCreationManager
     /**
      * {@inheritDoc}
      * 
-     * @see JiraIssueCreationManager#suggestProject(java.lang.String,
-     *      java.lang.String)
+     * @see JiraIssueCreationManager#suggestProject(java.lang.String, java.lang.String)
      */
     public String suggestProject(String instanceId, String text)
     {
@@ -155,7 +153,7 @@ public class DefaultJiraIssueCreationManager implements JiraIssueCreationManager
         }
 
         for (JsonNode projectJSON : jsonTree) {
-            if (res.size() > 20) {
+            if (res.size() > 5) {
                 break;
             }
 
@@ -165,6 +163,13 @@ public class DefaultJiraIssueCreationManager implements JiraIssueCreationManager
             String key = projectJSON.get(KEY).asText();
 
             if (!(name.toLowerCase().contains(lowercaseText) || key.toLowerCase().contains(lowercaseText))) {
+                continue;
+            }
+
+            // Check for issue creation permission.
+            try {
+                getJiraIssueCreationRestClient(instanceId).getIssueTypes(key);
+            } catch (JiraIssueCreationException e) {
                 continue;
             }
 
@@ -192,8 +197,7 @@ public class DefaultJiraIssueCreationManager implements JiraIssueCreationManager
     /**
      * {@inheritDoc}
      * 
-     * @see JiraIssueCreationManager#suggestIssueType(java.lang.String,
-     *      java.lang.String, java.lang.String)
+     * @see JiraIssueCreationManager#suggestIssueType(java.lang.String, java.lang.String, java.lang.String)
      */
     public String suggestIssueType(String instanceId, String project, String text)
     {
@@ -245,8 +249,7 @@ public class DefaultJiraIssueCreationManager implements JiraIssueCreationManager
     /**
      * {@inheritDoc}
      * 
-     * @see JiraIssueCreationManager#suggestAssignableUser(java.lang.String,
-     *      java.lang.String, java.lang.String)
+     * @see JiraIssueCreationManager#suggestAssignableUser(java.lang.String, java.lang.String, java.lang.String)
      */
     public String suggestAssignableUser(String instanceId, String project, String text)
     {
@@ -312,8 +315,7 @@ public class DefaultJiraIssueCreationManager implements JiraIssueCreationManager
     /**
      * {@inheritDoc}
      * 
-     * @see JiraIssueCreationManager#getFieldsMetadata(java.lang.String,
-     *      java.lang.String, java.lang.String)
+     * @see JiraIssueCreationManager#getFieldsMetadata(java.lang.String, java.lang.String, java.lang.String)
      */
     public String getFieldsMetadata(String instanceId, String project, String issueType)
     {
