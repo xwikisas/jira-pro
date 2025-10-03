@@ -44,8 +44,7 @@ define('xwiki-jira-issue-creation-translation-keys', {
     "form.result.failed.generic",
     "form.result.failed.empty",
     "form.interruption.refresh",
-    "form.nav.content.list.title",
-    "form.nav.content.jql.title",
+    "form.nav.macro.title",
     "form.nav.creation.title",
     "form.interruption.instance.empty",
   ]
@@ -1189,13 +1188,19 @@ require(['jquery', 'xwiki-l10n!xwiki-jira-issue-creation-translation-keys', 'xwi
 
   const attachServerPicker = function(event, data) {
     let container = $((data && data.elements) || document);
-    $(".macro-editor[data-macroid='jira/xwiki/2.1']").find("#macroParameterTreeNode-instance").find(".macro-parameter[data-id='id']").each(function() {
-      const field = $(this).find('.macro-parameter-field');
+
+    const macroEditor = $(".macro-editor[data-macroid='jira/xwiki/2.1']");
+    const idField = macroEditor.find("#macroParameterTreeNode-instance").find(".macro-parameter[data-id='id']")
+
+    if (idField.length > 0) {
+      const field = idField.find('.macro-parameter-field');
       const oldInput = field.find(':input');
 
-      field.empty();
+      const instanceGroup = idField.parents(".macro-parameter-group");
+      instanceGroup.remove()
+
       const select = $("<select></select>");
-      field.append(select);
+      field.empty().append(select);
 
       select.attr("name", oldInput.attr("name"));
       select.attr("id", "instanceId")
@@ -1206,101 +1211,111 @@ require(['jquery', 'xwiki-l10n!xwiki-jira-issue-creation-translation-keys', 'xwi
       option.text(oldInput.val());
       select.append(option);
       select.addClass("suggest-jira-instance");
-    });
+
+      macroEditor.find(".jira-instance-container").empty().append(idField);
+    }
   };
 
   const attachContentPicker = function(event, data) {
     let container = $((data && data.elements) || document);
-    $(".macro-editor[data-macroid='jira/xwiki/2.1']").find(".macro-parameter[data-id='$content']").each(function () {
 
-      const field = $(this).find('.macro-parameter-field').addClass("macro-parameter-group");
+    const macroEditor = $(".macro-editor[data-macroid='jira/xwiki/2.1']");
+    const macroParameters = macroEditor.find(".macro-parameters");
 
-      const oldContent = field.children().clone(true)
-      const contentNav = $(`
-        <ul class="nav nav-tabs" id="jiraContentNav">
-        </ul>`);
-      const listNav = $('<li role="presentation" class="active"><a href="#content-tab-list" role="tab" data-toggle="tab"></a></li>');
-      listNav.find("a").text(l10n["form.nav.content.list.title"]);
-      const creationNav = $('<li role="presentation" ><a href="#content-tab-new" role="tab" data-toggle="tab"></a></li>');
-      creationNav.find("a").text(l10n["form.nav.creation.title"]);
-      contentNav.append(listNav);
-      contentNav.append(creationNav);
-      const newContent = $(`
-        <div class="tab-content">
-          <div id="content-tab-list" role="tabpanel" class="tab-pane active macro-content-pane">
-            <div id="content-tab-list-success-messages">
-            </div>
-          </div>
-          <div id="content-tab-new" role="tabpanel" class="tab-pane">
+    const field = macroParameters.find('.macro-parameter-field').addClass("macro-parameter-group");
+
+    const oldContent = macroParameters.children().clone(true)
+    const jiraInstanceContainer = $(`
+      <li class="jira-instance-container macro-parameter">
+      </li>
+    `);
+    const jiraCreationNav = $(`
+      <ul class="nav nav-tabs" id="jiraCreationNav">
+      </ul>`);
+    const macroParametersNav = $('<li role="presentation" class="active"><a href="#content-tab-list" role="tab" data-toggle="tab"></a></li>');
+    macroParametersNav.find("a").text(l10n["form.nav.macro.title"]);
+    const creationNav = $('<li role="presentation" ><a href="#content-tab-new" role="tab" data-toggle="tab"></a></li>');
+    creationNav.find("a").text(l10n["form.nav.creation.title"]);
+    jiraCreationNav.append(macroParametersNav);
+    jiraCreationNav.append(creationNav);
+    const newContent = $(`
+      <div class="tab-content jira-nav-tabs">
+        <div id="content-tab-list" role="tabpanel" class="tab-pane active macro-content-pane">
+          <div id="content-tab-list-success-messages">
           </div>
         </div>
-      `)// FIXME: l10n: form.nav.content.list.title, form.nav.content.jql.title, form.nav.creation.title
-      if ($('#jiraContentNav').length === 0) {
-        field.empty().append(contentNav);
-        field.append(newContent);
-        field.find(".macro-content-pane").append(oldContent);
+        <div id="content-tab-new" role="tabpanel" class="tab-pane">
+        </div>
+      </div>
+    `)
+    console.log("Attaching?");
+    if ($('#jiraCreationNav').length === 0) {
+      macroParameters.empty();
+      macroParameters.append(jiraInstanceContainer);
+      macroParameters.append(jiraCreationNav);
+      macroParameters.append(newContent);
+      macroParameters.find(".macro-content-pane").append(oldContent);
+    }
+
+    const newTab = macroParameters.find('#content-tab-new');
+    const listTabMessage = macroParameters.find('#content-tab-list-success-messages');
+    const textarea = field.find('textarea[name="$content"]')[0];
+
+    const callback = function(data) {
+      listTabMessage.empty();
+      if (data) {
+        macroEditor.find('.nav-tabs a[href="#content-tab-list"]').tab('show');
+        listTabMessage.append(`
+          <div class="jira-issue-creation-success-message">
+            <p>Created issue: ${data}</p>
+          </div>
+        `)
+        $('.jira-issue-creation-success-message')[0].scrollIntoView();
       }
 
-      const newTab = field.find('#content-tab-new');
-      const listTabMessage = field.find('#content-tab-list-success-messages');
-      const textarea = field.find('textarea[name="$content"]')[0];
-
-      const callback = function(data) {
-        listTabMessage.empty();
-        if (data) {
-          field.find('.nav-tabs a[href="#content-tab-list"]').tab('show');
-          listTabMessage.append(`
-            <div class="jira-issue-creation-success-message">
-              <p>Created issue: ${data}</p>
-            </div>
-          `)
-          $('.jira-issue-creation-success-message')[0].scrollIntoView();
-        }
-
-        const getInstance = function() {
-          return field.parents("form").find('.suggest-jira-instance').val();
-        };
-
-        const jiraLicenceParameters = {
-          outputSyntax: "html",
-          action: "licenceStatus"
-        }
-
-        $.get(jiraService.getURL('get', $.param($.extend({}, jiraLicenceParameters)))).done((data) => {
-          result = $("<div></div>").append(data).find(".errormessage");
-          if (result.length !== 0) {
-            createIssueCreationFlowInterruption(newTab, result, callback);
-          } else {
-            attachServerPicker();
-            $('.suggest-jira-instance').suggestJiraInstance();
-            $('.suggest-jira-instance').on('change', function(event) {
-              attachContentPicker();
-            });
-
-            if (getInstance().blank()) {
-              const instanceWarning = $('<div class="box warningmessage"><p>Please select an instance.</p></div>');
-              instanceWarning.find("p").text(l10n["form.interruption.instance.empty"]);
-              return createIssueCreationFlowInterruption(newTab, instanceWarning, callback);
-            }
-
-            const jiraActionRequiredParameters = {
-              outputSyntax: "plain",
-              instanceId: getInstance(),
-              action: "getAuthenticationActionRequiredUI"
-            };
-
-            $.get(jiraService.getURL('get', $.param($.extend({}, jiraActionRequiredParameters)))).done((data) => {
-              if (data.message) {
-                createIssueCreationFlowInterruption(newTab, data.message, callback);
-              } else {
-                createIssueCreationForm(textarea, newTab, callback);
-              }
-            });
-          }
-        });
+      const getInstance = function() {
+        return macroEditor.find('.suggest-jira-instance').val();
       };
-      callback()
-    });
+
+      const jiraLicenceParameters = {
+        outputSyntax: "html",
+        action: "licenceStatus"
+      }
+
+      $.get(jiraService.getURL('get', $.param($.extend({}, jiraLicenceParameters)))).done((data) => {
+        result = $("<div></div>").append(data).find(".errormessage");
+        if (result.length !== 0) {
+          createIssueCreationFlowInterruption(newTab, result, callback);
+        } else {
+          attachServerPicker();
+          $('.suggest-jira-instance').suggestJiraInstance();
+          $('.suggest-jira-instance').on('change', function(event) {
+            attachContentPicker();
+          });
+
+          if (getInstance().blank()) {
+            const instanceWarning = $('<div class="box warningmessage"><p>Please select an instance.</p></div>');
+            instanceWarning.find("p").text(l10n["form.interruption.instance.empty"]);
+            return createIssueCreationFlowInterruption(newTab, instanceWarning, callback);
+          }
+
+          const jiraActionRequiredParameters = {
+            outputSyntax: "plain",
+            instanceId: getInstance(),
+            action: "getAuthenticationActionRequiredUI"
+          };
+
+          $.get(jiraService.getURL('get', $.param($.extend({}, jiraActionRequiredParameters)))).done((data) => {
+            if (data.message) {
+              createIssueCreationFlowInterruption(newTab, data.message, callback);
+            } else {
+              createIssueCreationForm(textarea, newTab, callback);
+            }
+          });
+        }
+      });
+    };
+    callback()
   };
 
   $(document).on('xwiki:dom:updated', attachContentPicker);

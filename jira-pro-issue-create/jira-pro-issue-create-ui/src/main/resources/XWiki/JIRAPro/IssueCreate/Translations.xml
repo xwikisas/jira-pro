@@ -54,9 +54,8 @@ com.xwiki.jirapro.issuecreate.form.create=Create Issue
 com.xwiki.jirapro.issuecreate.form.result.failed.generic=Failed to create issue.
 com.xwiki.jirapro.issuecreate.form.result.failed.empty=All fields are required.
 com.xwiki.jirapro.issuecreate.form.interruption.refresh=Refresh
-com.xwiki.jirapro.issuecreate.form.nav.content.list.title=Issues List
-com.xwiki.jirapro.issuecreate.form.nav.content.jql.title=Issues JQL
 com.xwiki.jirapro.issuecreate.form.nav.creation.title=Issue Creation
+com.xwiki.jirapro.issuecreate.form.nav.macro.title=Macro Parameters
 com.xwiki.jirapro.issuecreate.form.interruption.instance.empty=Please select an instance id.</content>
   <object>
     <name>XWiki.JIRAPro.IssueCreate.Translations</name>
