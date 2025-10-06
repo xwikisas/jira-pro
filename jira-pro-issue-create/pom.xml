@@ -23,7 +23,7 @@
   <parent>
     <groupId>com.xwiki.jirapro</groupId>
     <artifactId>jira-pro</artifactId>
-    <version>1.0.0-beta-4-SNAPSHOT</version>
+    <version>1.0.0-beta-4</version>
   </parent>
   <artifactId>jira-pro-issue-create</artifactId>
   <packaging>pom</packaging>
