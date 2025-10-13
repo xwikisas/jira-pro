@@ -1222,9 +1222,9 @@ require(['jquery', 'xwiki-l10n!xwiki-jira-issue-creation-translation-keys', 'xwi
     const macroEditor = $(".macro-editor[data-macroid='jira/xwiki/2.1']");
     const macroParameters = macroEditor.find(".macro-parameters");
 
-    const field = macroParameters.find('.macro-parameter-field').addClass("macro-parameter-group");
-
     const oldContent = macroParameters.children().clone(true)
+
+    const field = oldContent.find('.macro-parameter-field').addClass("macro-parameter-group");
     const jiraInstanceContainer = $(`
       <li class="jira-instance-container macro-parameter">
       </li>
