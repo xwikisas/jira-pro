@@ -44,6 +44,7 @@
 #set ($jiraOAuthClass = 'XWiki.JIRAPro.OAuth.ConfigClass')
 #set ($oidcConfClass = 'XWiki.OIDC.ClientConfigurationClass')
 #set ($confDoc = $xwiki.getDocument('XWiki.JIRAPro.OAuth.Config'))
+#set ($discard = $confDoc.setHidden(true))
 #set ($confObjects = $confDoc.getObjects($jiraOAuthClass))
 #set ($oidcConfObjects = $confDoc.getObjects('XWiki.OIDC.ClientConfigurationClass'))
 #if ($xcontext.action == 'get')
