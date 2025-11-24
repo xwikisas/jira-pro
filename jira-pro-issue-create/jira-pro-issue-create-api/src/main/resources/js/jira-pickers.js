@@ -1222,9 +1222,8 @@ require(['jquery', 'xwiki-l10n!xwiki-jira-issue-creation-translation-keys', 'xwi
     const macroEditor = $(".macro-editor[data-macroid='jira/xwiki/2.1']");
     const macroParameters = macroEditor.find(".macro-parameters");
 
-    const oldContent = macroParameters.children().clone(true)
+    let oldContent = macroParameters.children()
 
-    const field = oldContent.find('.macro-parameter-field').addClass("macro-parameter-group");
     const jiraInstanceContainer = $(`
       <li class="jira-instance-container macro-parameter">
       </li>
@@ -1250,6 +1249,7 @@ require(['jquery', 'xwiki-l10n!xwiki-jira-issue-creation-translation-keys', 'xwi
     `)
     console.log("Attaching?");
     if ($('#jiraCreationNav').length === 0) {
+      oldContent = oldContent.clone(true);
       macroParameters.empty();
       macroParameters.append(jiraInstanceContainer);
       macroParameters.append(jiraCreationNav);
@@ -1259,6 +1259,7 @@ require(['jquery', 'xwiki-l10n!xwiki-jira-issue-creation-translation-keys', 'xwi
 
     const newTab = macroParameters.find('#content-tab-new');
     const listTabMessage = macroParameters.find('#content-tab-list-success-messages');
+    const field = oldContent.find('.macro-parameter-field').addClass("macro-parameter-group");
     const textarea = field.find('textarea[name="$content"]')[0];
 
     const callback = function(data) {
