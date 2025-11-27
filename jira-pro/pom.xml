@@ -25,14 +25,33 @@
   <parent>
     <groupId>com.xwiki.jirapro</groupId>
     <artifactId>jira-pro-parent</artifactId>
-    <version>1.0.0-beta-7-SNAPSHOT</version>
+    <version>1.0.0-beta-6-SNAPSHOT</version>
   </parent>
-  <artifactId>jira-pro-oauth</artifactId>
-  <name>JIRA Pro - OAuth - Parent POM</name>
-  <packaging>pom</packaging>
-  <modules>
-    <module>jira-pro-oauth-api</module>
-    <module>jira-pro-oauth-ui</module>
-  </modules>
-
+  <artifactId>jira-pro</artifactId>
+  <name>JIRA Pro - Application</name>
+  <packaging>xar</packaging>
+  <description>JIRA integration for XWiki providing macros and possibility to create issues from XWiki.</description>
+  <properties>
+    <xwiki.extension.name>JIRA Pro application</xwiki.extension.name>
+    <xwiki.extension.category>other</xwiki.extension.category>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>com.xwiki.licensing</groupId>
+      <artifactId>application-licensing-licensor-api</artifactId>
+      <version>${licensing.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.xwiki.jirapro</groupId>
+      <artifactId>jira-pro-issue-create-ui</artifactId>
+      <version>${project.version}</version>
+      <type>xar</type>
+    </dependency>
+    <dependency>
+      <groupId>com.xwiki.jirapro</groupId>
+      <artifactId>jira-pro-oauth-ui</artifactId>
+      <version>${project.version}</version>
+      <type>xar</type>
+    </dependency>
+  </dependencies>
 </project>

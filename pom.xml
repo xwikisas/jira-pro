@@ -28,7 +28,7 @@
     <version>15.10</version>
   </parent>
   <groupId>com.xwiki.jirapro</groupId>
-  <artifactId>jira-pro</artifactId>
+  <artifactId>jira-pro-parent</artifactId>
   <version>1.0.0-beta-7-SNAPSHOT</version>
   <name>JIRA Pro - Parent POM</name>
   <packaging>pom</packaging>
@@ -49,6 +49,7 @@
     <xwiki.extension.category>application</xwiki.extension.category>
   </properties>
   <modules>
+    <module>jira-pro</module>
     <module>jira-pro-oauth</module>
     <module>jira-pro-issue-create</module>
   </modules>
