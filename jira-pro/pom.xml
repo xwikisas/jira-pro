@@ -25,7 +25,7 @@
   <parent>
     <groupId>com.xwiki.jirapro</groupId>
     <artifactId>jira-pro-parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
   </parent>
   <artifactId>jira-pro</artifactId>
   <name>JIRA Pro - Application</name>
