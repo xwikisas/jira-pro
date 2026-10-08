@@ -92,7 +92,10 @@
           #end
           #set ($discard = $oidcObject.set('configurationName', $oidcConfigId))
           #set ($discard = $oidcObject.set('clientId', $formClientIdValue))
-          #set ($discard = $oidcObject.set('clientSecret', $formClientSecretValue))
+          ## Don't save the value if it's the placeholder - also if we try to do it, we have a NPE
+          #if ($formClientSecretValue != '********')
+            #set ($discard = $oidcObject.set('clientSecret', $formClientSecretValue))
+          #end
           #set ($discard = $oidcObject.set('authorizationEndpoint', "${baseUrl}/rest/oauth2/latest/authorize"))
           #set ($discard = $oidcObject.set('tokenEndpoint', "${baseUrl}/rest/oauth2/latest/token"))
           #set ($discard = $oidcObject.set('tokenEndpointMethod', 'client_secret_post'))
