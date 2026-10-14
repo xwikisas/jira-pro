@@ -1,1 +1,91 @@
+<?xml version="1.1" encoding="UTF-8"?>
 
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.5" reference="XWiki.JIRAPro.OAuth.Translations" locale="">
+  <web>XWiki.JIRAPro.OAuth</web>
+  <name>Translations</name>
+  <language/>
+  <defaultLanguage>en</defaultLanguage>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Translations</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>plain/1.0</syntaxId>
+  <hidden>true</hidden>
+  <content>com.xwiki.jirapro.oauth.mustbeauthenticated.jira.description=Vous devez être authentifié dans Jira pour pouvoir voir le contenu issu de Jira.
+com.xwiki.jirapro.oauth.mustbeauthenticated.jira.link=Cliquez ici pour vous authentifier dans Jira
+com.xwiki.jirapro.oauth.mustbeauthenticated.xwiki.description=Vous devez être authentifié dans XWiki pour pouvoir voir le contenu issu de Jira.
+com.xwiki.jirapro.oauth.mustbeauthenticated.xwiki.link=Cliquez ici pour vous authentifier dans XWiki
+com.xwiki.jirapro.oauth.mightneedtoauthenticate.jira.description=Les résultats affichés par cette macro sont limités au contenu public.
+com.xwiki.jirapro.oauth.mightneedtoauthenticate.jira.link=Cliquez ici pour vous authentifier dans Jira et voir l'ensemble du contenu
+com.xwiki.jirapro.oauth.mightneedtoauthenticate.xwiki.description=Les résultats affichés par cette macro sont limités au contenu public.
+com.xwiki.jirapro.oauth.mightneedtoauthenticate.xwiki.link=Cliquez ici pour vous authentifier dans XWiki et voir l'ensemble du contenu
+com.xwiki.jirapro.oauth.oauth=OAuth
+com.xwiki.jirapro.oauth.requireAuthentication=Requiert une authentification pour pouvoir voir le contenu
+com.xwiki.jirapro.oauth.requireAuthentication_hint=Lorsque activé, cela signifie que l'utilisateur ne pourra pas utiliser le serveur Jira sans avoir suivi le processus d'authentification. Pour les serveurs Jira privés, il est recommandé de l'activer.
+com.xwiki.jirapro.oauth.clientId=ID Client
+com.xwiki.jirapro.oauth.clientSecret=Secret
+com.xwiki.jirapro.oauth.extension.name=OAuth Jira
+</content>
+  <object>
+    <name>XWiki.JIRAPro.OAuth.Translations</name>
+    <number>0</number>
+    <className>XWiki.TranslationDocumentClass</className>
+    <guid>37957d25-f6bf-4545-a3d4-7e4a329d0500</guid>
+    <class>
+      <name>XWiki.TranslationDocumentClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>1</number>
+        <prettyName>Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>GLOBAL|WIKI|USER|ON_DEMAND</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <scope>WIKI</scope>
+    </property>
+  </object>
+</xwikidoc>
