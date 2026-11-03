@@ -93,6 +93,8 @@
           #set ($discard = $oidcObject.set('configurationName', $oidcConfigId))
           #set ($discard = $oidcObject.set('clientId', $formClientIdValue))
           ## Don't save the value if it's the placeholder - also if we try to do it, we have a NPE
+          ## TODO: Remove this workaround once the parent is upgraded to a version where
+          ## https://jira.xwiki.org/browse/XWIKI-25219 is fixed (17.10.14, 18.4.7, 18.9.0-rc-1).
           #if ($formClientSecretValue != '********')
             #set ($discard = $oidcObject.set('clientSecret', $formClientSecretValue))
           #end
