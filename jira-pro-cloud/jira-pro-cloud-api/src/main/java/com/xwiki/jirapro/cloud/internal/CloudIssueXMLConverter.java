@@ -23,7 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -297,8 +297,9 @@ public class CloudIssueXMLConverter
     {
         try {
             if (CLOUD_DATE_PATTERN.matcher(text).matches()) {
-                // JIRA Cloud doesn't give the time zone of the server used by JIRA Data Center, so UTC is used.
-                return XML_DATE_FORMAT.format(LocalDate.parse(text).atStartOfDay(ZoneOffset.UTC));
+                // Midnight in the time zone of the wiki server, like JIRA Data Center does in the one of its server:
+                // the JIRA macro displays the date in the time zone of the wiki server, so it stays the same day.
+                return XML_DATE_FORMAT.format(LocalDate.parse(text).atStartOfDay(ZoneId.systemDefault()));
             } else if (CLOUD_DATE_TIME_PATTERN.matcher(text).matches()) {
                 return XML_DATE_FORMAT.format(OffsetDateTime.parse(text, CLOUD_DATE_TIME_FORMAT));
             }

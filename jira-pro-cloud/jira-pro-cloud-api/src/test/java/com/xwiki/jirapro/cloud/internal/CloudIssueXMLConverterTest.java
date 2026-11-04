@@ -19,11 +19,15 @@
  */
 package com.xwiki.jirapro.cloud.internal;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -49,10 +53,22 @@ class CloudIssueXMLConverterTest
 
     private JsonNode searchResult;
 
+    private TimeZone defaultTimeZone;
+
     @BeforeEach
     void setUp() throws Exception
     {
+        // A time zone west of UTC, where a date at midnight UTC would be displayed as the previous day.
+        this.defaultTimeZone = TimeZone.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("America/Los_Angeles"));
+
         this.searchResult = new ObjectMapper().readTree(getClass().getResourceAsStream("/cloud-search.json"));
+    }
+
+    @AfterEach
+    void tearDown()
+    {
+        TimeZone.setDefault(this.defaultTimeZone);
     }
 
     private List<Element> convert()
@@ -103,10 +119,21 @@ class CloudIssueXMLConverterTest
         assertEquals(List.of("1.0"), texts(item, "version"));
         assertEquals(List.of("1.1", "2.0"), texts(item, "fixVersion"));
         assertEquals(List.of("core"), texts(item, "component"));
-        // The due date has no time, it is at midnight UTC since the time zone of the site is unknown.
-        assertEquals("Tue, 1 May 2007 00:00:00 +0000", item.getChildText("due"));
+        // The due date has no time, it is at midnight in the time zone of the wiki server.
+        assertEquals("Tue, 1 May 2007 00:00:00 -0700", item.getChildText("due"));
         assertEquals("20", item.getChildText("votes"));
         assertEquals("23", item.getChildText("watches"));
+    }
+
+    @Test
+    void convertDueDateDisplayedOnTheSameDay() throws Exception
+    {
+        String due = convert().get(0).getChildText("due");
+
+        // Parsed and formatted like the date displayer of the JIRA macro, in the time zone of the wiki server.
+        SimpleDateFormat jiraDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
+        SimpleDateFormat displayDateFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+        assertEquals("01-May-2007", displayDateFormat.format(jiraDateFormat.parse(due)));
     }
 
     @Test
@@ -120,7 +147,7 @@ class CloudIssueXMLConverterTest
             List.of("Text field=Some text", "Number field=1.5", "Select field=Option A",
                 "Multi select field=One, Two", "User field=Jack Doe", "Date field=Tue, 17 Aug 2004 15:03:23 -0700",
                 "Rich text field=<p>Rich <i>text</i></p>", "Cascading select field=Parent\nChild",
-                "Date picker field=Fri, 20 Aug 2004 00:00:00 +0000"),
+                "Date picker field=Fri, 20 Aug 2004 00:00:00 -0700"),
             customFields.stream().map(customField -> customField.getChildText("customfieldname") + "="
                 + customField.getChild("customfieldvalues").getValue()).collect(Collectors.toList()));
         assertEquals("customfield_10010", customFields.get(0).getAttributeValue("id"));
